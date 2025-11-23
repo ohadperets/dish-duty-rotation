@@ -548,7 +548,6 @@ async function displayAdminPanel(filterGroup = 'all', environment = 'production'
         statsSection.className = 'group-stats-editor';
         statsSection.innerHTML = `
             <h3>📊 Edit Statistics for ${filterGroup.replace(/,/g, ', ')}</h3>
-            <p class="stats-help">Adjust the count for each brother. This will add or remove entries.</p>
             <div class="stats-grid"></div>
             <button class="confirm-btn" id="apply-stats-btn">💾 Apply Changes</button>
             <hr style="margin: 2rem 0; border: 1px solid rgba(139, 92, 246, 0.3);">
