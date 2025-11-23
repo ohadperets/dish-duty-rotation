@@ -1022,22 +1022,24 @@ header h1 {
 }
 
 .log-filters {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 #group-filter, #admin-group-filter, #admin-env-filter {
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
     border: 2px solid #8b5cf6;
     border-radius: 50px;
     background: rgba(15, 23, 42, 0.9);
     color: #a78bfa;
     cursor: pointer;
     outline: none;
+    flex: 1;
+    min-width: 0;
 }
 
 .log-entries {
