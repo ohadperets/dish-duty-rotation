@@ -262,23 +262,53 @@ adminToggle.addEventListener('click', () => {
 });
 
 // Admin password submission
+// Admin login with username/password from Firebase
 document.getElementById('admin-submit-btn').addEventListener('click', async () => {
-    const password = adminPasswordInput.value;
+    const username = document.getElementById('admin-username-input').value.trim();
+    const password = document.getElementById('admin-password-input').value;
     
-    if (password === 'Op0544756518') {
-        adminModal.classList.add('hidden');
+    if (!username || !password) {
+        alert('❌ Please enter both username and password!');
+        return;
+    }
+    
+    try {
+        // Hash the password using SHA-256
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         
-        // Hide other screens and show admin panel
-        selectionScreen.classList.add('hidden');
-        resultScreen.classList.add('hidden');
-        logScreen.classList.add('hidden');
-        adminPanel.classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Get admin credentials from Firebase
+        const adminCredsDoc = await db.collection('adminCredentials').doc('credentials').get();
         
-        await displayAdminPanel();
-    } else {
-        alert('❌ Incorrect password!');
-        adminPasswordInput.value = '';
+        if (!adminCredsDoc.exists) {
+            alert('❌ Admin credentials not configured!');
+            return;
+        }
+        
+        const creds = adminCredsDoc.data();
+        
+        if (creds.username === username && creds.passwordHash === passwordHash) {
+            adminModal.classList.add('hidden');
+            
+            // Hide other screens and show admin panel
+            selectionScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            logScreen.classList.add('hidden');
+            adminPanel.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            await displayAdminPanel();
+        } else {
+            alert('❌ Incorrect username or password!');
+            document.getElementById('admin-username-input').value = '';
+            document.getElementById('admin-password-input').value = '';
+        }
+    } catch (error) {
+        console.error('Admin login error:', error);
+        alert('❌ Login failed. Please try again.');
     }
 });
 
@@ -286,6 +316,13 @@ document.getElementById('admin-submit-btn').addEventListener('click', async () =
 adminPasswordInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         document.getElementById('admin-submit-btn').click();
+    }
+});
+
+// Also allow Enter on username field
+document.getElementById('admin-username-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        document.getElementById('admin-password-input').focus();
     }
 });
 
@@ -389,9 +426,9 @@ function determineWhoDoesTheDishes(presentBrothers) {
         
         if (lastDates[chosen]) {
             const lastDateStr = new Date(lastDates[chosen]).toLocaleDateString();
-            reason = `All brothers have ${minCount} turns, but ${chosen} did it earliest (last on ${lastDateStr}).`;
+            reason = `All tied at ${minCount} turns. ${chosen} did it earliest (${lastDateStr}).`;
         } else {
-            reason = `All brothers have ${minCount} turns, but ${chosen} has never done it in this group configuration.`;
+            reason = `All tied at ${minCount} turns. ${chosen} hasn't done it with this group yet.`;
         }
     }
     

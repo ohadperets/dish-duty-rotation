@@ -48,9 +48,9 @@ export function determineWhoDoesTheDishes(presentBrothers, dishHistory) {
         
         if (lastDates[chosen]) {
             const lastDateStr = new Date(lastDates[chosen]).toLocaleDateString();
-            reason = `All brothers have ${minCount} turns, but ${chosen} did it earliest (last on ${lastDateStr}).`;
+            reason = `All tied at ${minCount} turns. ${chosen} did it earliest (${lastDateStr}).`;
         } else {
-            reason = `All brothers have ${minCount} turns, but ${chosen} has never done it in this group configuration.`;
+            reason = `All tied at ${minCount} turns. ${chosen} hasn't done it with this group yet.`;
         }
     }
     

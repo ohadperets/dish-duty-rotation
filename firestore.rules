@@ -12,6 +12,12 @@ service cloud.firestore {
       allow read, write: if true;
     }
     
+    // Admin credentials - read only, write manually through Firebase Console
+    match /adminCredentials/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+    
     // More restrictive alternative (uncomment if you want IP-based restrictions):
     // match /dishes/{document} {
     //   allow read: if true;

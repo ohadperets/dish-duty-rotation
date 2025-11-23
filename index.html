@@ -38,11 +38,11 @@
     <!-- Production/Admin Access Modal -->
     <div id="admin-modal" class="modal hidden">
         <div class="modal-content">
-            <h2>🔑 Admin Access</h2>
-            <p>Enter admin password:</p>
-            <input type="password" id="admin-password-input" placeholder="Enter admin password" />
+            <h2>🔑 Admin Login</h2>
+            <input type="text" id="admin-username-input" placeholder="Username" style="margin-bottom: 0.5rem;" />
+            <input type="password" id="admin-password-input" placeholder="Password" />
             <div class="modal-buttons">
-                <button id="admin-submit-btn" class="confirm-btn">Access Admin</button>
+                <button id="admin-submit-btn" class="confirm-btn">Login</button>
                 <button id="cancel-admin-access" class="secondary-btn">Cancel</button>
             </div>
         </div>
@@ -170,7 +170,7 @@
                     </select>
                 </div>
                 <div id="admin-entries" class="log-entries"></div>
-                <button id="close-admin-btn" class="secondary-btn">← Close Admin Panel</button>
+                <button id="close-admin-btn" class="secondary-btn">← Close</button>
             </div>
         </section>
 

@@ -4,6 +4,9 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 
+# Admin Setup (contains credentials)
+setup-admin-credentials.html
+
 # Node
 node_modules/
 npm-debug.log
