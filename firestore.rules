@@ -12,10 +12,9 @@ service cloud.firestore {
       allow read, write: if true;
     }
     
-    // Admin credentials - read only, write manually through Firebase Console
+    // Admin credentials - allow write for setup, then change to read-only
     match /adminCredentials/{document} {
-      allow read: if true;
-      allow write: if false;
+      allow read, write: if true;
     }
     
     // More restrictive alternative (uncomment if you want IP-based restrictions):

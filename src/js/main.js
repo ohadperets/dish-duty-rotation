@@ -273,6 +273,10 @@ document.getElementById('admin-submit-btn').addEventListener('click', async () =
     }
     
     try {
+        // Wait for Firebase to be ready
+        await DB.waitForFirebase();
+        const { doc, getDoc } = window.firestoreModules;
+        
         // Hash the password using SHA-256
         const encoder = new TextEncoder();
         const data = encoder.encode(password);
@@ -281,9 +285,10 @@ document.getElementById('admin-submit-btn').addEventListener('click', async () =
         const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         
         // Get admin credentials from Firebase
-        const adminCredsDoc = await db.collection('adminCredentials').doc('credentials').get();
+        const docRef = doc(window.firebaseDB, 'adminCredentials', 'credentials');
+        const adminCredsDoc = await getDoc(docRef);
         
-        if (!adminCredsDoc.exists) {
+        if (!adminCredsDoc.exists()) {
             alert('❌ Admin credentials not configured!');
             return;
         }
@@ -308,7 +313,7 @@ document.getElementById('admin-submit-btn').addEventListener('click', async () =
         }
     } catch (error) {
         console.error('Admin login error:', error);
-        alert('❌ Login failed. Please try again.');
+        alert('❌ Login failed: ' + error.message);
     }
 });
 

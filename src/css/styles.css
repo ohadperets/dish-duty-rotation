@@ -222,6 +222,7 @@ body::after {
     font-weight: 600;
 }
 
+#admin-username-input,
 #admin-password-input {
     padding: 1rem;
     border: 2px solid #8b5cf6;
@@ -234,6 +235,7 @@ body::after {
     margin-bottom: 1.5rem;
 }
 
+#admin-username-input:focus,
 #admin-password-input:focus {
     border-color: #a78bfa;
 }
