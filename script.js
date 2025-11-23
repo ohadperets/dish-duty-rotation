@@ -569,7 +569,6 @@ async function displayAdminPanel(filterGroup = 'all', environment = 'production'
                     <button class="stat-btn minus-btn" data-brother="${brother}">−</button>
                     <input type="number" class="stat-count-input" data-brother="${brother}" value="${count}" min="0" />
                     <button class="stat-btn plus-btn" data-brother="${brother}">+</button>
-                    <span class="stat-times">times</span>
                 </div>
             `;
             statsGrid.appendChild(statCard);

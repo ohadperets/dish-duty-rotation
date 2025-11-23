@@ -429,7 +429,7 @@ body::after {
     border-radius: 12px;
     padding: 0.75rem 1rem;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     gap: 1rem;
     max-width: 400px;
@@ -443,7 +443,8 @@ body::after {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    flex: 1;
+    width: 120px;
+    min-width: 120px;
 }
 
 .stat-brother-img {
