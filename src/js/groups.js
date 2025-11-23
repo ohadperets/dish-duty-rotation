@@ -7,7 +7,7 @@ export const Groups = {
     },
 
     // Create a new group
-    async createGroup(groupName, creatorUid) {
+    async createGroup(groupName, creatorUid, photoUrl = '👥') {
         const { doc, setDoc, getDoc, serverTimestamp } = window.firestoreModules;
         
         let groupId;
@@ -35,6 +35,7 @@ export const Groups = {
             await setDoc(groupRef, {
                 groupId,
                 name: groupName,
+                photoUrl,
                 creatorUid,
                 createdAt: serverTimestamp()
             });

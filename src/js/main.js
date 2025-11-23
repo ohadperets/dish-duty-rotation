@@ -536,8 +536,12 @@ document.getElementById('confirm-btn').addEventListener('click', async () => {
         confirmBtn.disabled = false;
     }
     
-    // Reset to selection screen
-    resetToSelection();
+    // Go back to dashboard
+    if (window.App) {
+        window.App.returnToDashboard();
+    } else {
+        resetToSelection();
+    }
 });
 
 // View history log
@@ -926,9 +930,13 @@ document.getElementById('close-log-btn').addEventListener('click', () => {
     resultScreen.classList.remove('hidden');
 });
 
-// Reset button - back to selection
+// Reset button - back to dashboard
 document.getElementById('reset-btn').addEventListener('click', () => {
-    resetToSelection();
+    if (window.App) {
+        window.App.returnToDashboard();
+    } else {
+        resetToSelection();
+    }
 });
 
 // Reset to selection screen

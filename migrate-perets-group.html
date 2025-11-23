@@ -5,16 +5,9 @@
 </head>
 <body>
     <h1>Migrate Perets Group</h1>
-    <p><strong>Note:</strong> Due to CORS restrictions, automated migration is blocked. Please use the app to create group 10000 manually and add the dishwashers.</p>
-    <p>Alternatively, test the multi-group feature by creating a new group from your phone!</p>
+    <p>This will create group 10000 for the Perets family with existing data and photos.</p>
     
-    <div style="margin-bottom: 1rem;">
-        <label>ImgBB API Key: </label>
-        <input type="text" id="imgbb-api-key" value="6e996b4be8ce9bbce89c6441155718ab" style="width: 300px; padding: 0.5rem;" />
-        <p style="font-size: 0.9rem; color: #666;">Get your free API key at <a href="https://api.imgbb.com/" target="_blank">https://api.imgbb.com/</a></p>
-    </div>
-    
-    <button id="migrate-btn" style="padding: 1rem 2rem; font-size: 1.2rem; cursor: pointer;" disabled>Migrate Now (Blocked by CORS)</button>
+    <button id="migrate-btn" style="padding: 1rem 2rem; font-size: 1.2rem; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 8px;">Migrate Now</button>
     <div id="status"></div>
     
     <script type="module">
@@ -87,13 +80,6 @@
         
         document.getElementById('migrate-btn').addEventListener('click', async () => {
             const status = document.getElementById('status');
-            const apiKey = document.getElementById('imgbb-api-key').value.trim();
-            
-            if (!apiKey) {
-                status.innerHTML = '<p style="color: red;">Please enter your ImgBB API key</p>';
-                return;
-            }
-            
             status.innerHTML = '<p>Starting migration...</p>';
 
             
@@ -117,26 +103,17 @@
                 
                 status.innerHTML += '<p>✓ Created group 10000</p>';
                 
-                // Upload images to ImgBB and get URLs
-                status.innerHTML += '<p>Uploading images to ImgBB...</p>';
+                // Use pre-uploaded ImgBB images
+                status.innerHTML += '<p>Using pre-uploaded images from ImgBB...</p>';
                 
-                const brothers = ['Yonatan', 'Ohad', 'Raz', 'Yuval'];
-                const dishwashers = {};
+                const dishwashers = {
+                    'Yonatan': 'https://i.ibb.co/HJsy1vS/Yonatan.png',
+                    'Ohad': 'https://i.ibb.co/N2R7QgQG/Ohad.png',
+                    'Raz': 'https://i.ibb.co/TBkq4SMT/Raz.png',
+                    'Yuval': 'https://i.ibb.co/XZcbXtVY/Yuval.png'
+                };
                 
-                for (const brother of brothers) {
-                    try {
-                        const imageUrl = `https://dishess.com/Images/${brother}.png`;
-                        const downloadUrl = await uploadToImgBB(imageUrl, apiKey);
-                        dishwashers[brother] = downloadUrl;
-                        status.innerHTML += `<p>✓ Uploaded ${brother}'s photo</p>`;
-                    } catch (err) {
-                        console.error(`Error uploading ${brother}:`, err);
-                        status.innerHTML += `<p>⚠ Failed to upload ${brother}'s photo: ${err.message}</p>`;
-                        // Fallback to emoji if image upload fails
-                        const emojis = { 'Yonatan': '👨‍💼', 'Ohad': '👨‍💻', 'Raz': '👨‍🎓', 'Yuval': '👨‍🔬' };
-                        dishwashers[brother] = emojis[brother];
-                    }
-                }
+                status.innerHTML += '<p>✓ Using images for all brothers</p>';
 
                 
                 const groupDataRef = doc(db, 'groupData', '10000');

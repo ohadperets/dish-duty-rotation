@@ -115,6 +115,14 @@
         <div class="modal-content">
             <h2>Create New Group</h2>
             <input type="text" id="group-name-input" placeholder="Group name (e.g., Family, Roommates)" />
+            
+            <div style="margin-top: 1rem;">
+                <label style="color: #a78bfa; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Group Photo (optional)</label>
+                <input type="file" id="group-photo-file" accept="image/*" style="display: none;" />
+                <button class="file-upload-btn" onclick="document.getElementById('group-photo-file').click()">📷 Upload Photo</button>
+                <input type="text" id="group-photo-url" placeholder="Or paste emoji/URL" style="margin-top: 0.5rem; padding: 0.5rem; width: 100%; border: 2px solid rgba(139, 92, 246, 0.3); border-radius: 8px; background: rgba(15, 23, 42, 0.9); color: #e2e8f0;" />
+            </div>
+            
             <div class="modal-buttons">
                 <button id="confirm-create-group" class="confirm-btn">Create</button>
                 <button id="cancel-create-group" class="secondary-btn">Cancel</button>

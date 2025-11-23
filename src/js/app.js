@@ -95,17 +95,25 @@ export const App = {
             return;
         }
         
-        groupsList.innerHTML = this.userGroups.map(group => `
+        groupsList.innerHTML = this.userGroups.map(group => {
+            const photoUrl = group.photoUrl || '👥';
+            const isUrl = photoUrl.startsWith('http');
+            return `
             <div class="group-card" data-group-id="${group.groupId}">
                 <div class="group-card-header">
-                    <div>
-                        <div class="group-name">${group.name}</div>
-                        <div class="group-id">ID: ${group.groupId}</div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div class="group-photo" style="width: 50px; height: 50px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: rgba(139, 92, 246, 0.2); font-size: 1.5rem;">
+                            ${isUrl ? `<img src="${photoUrl}" alt="${group.name}" style="width: 100%; height: 100%; object-fit: cover;">` : photoUrl}
+                        </div>
+                        <div>
+                            <div class="group-name">${group.name}</div>
+                            <div class="group-id">ID: ${group.groupId}</div>
+                        </div>
                     </div>
                 </div>
                 <div class="group-role">${group.role === 'creator' ? '👑 Admin' : '👤 Member'}</div>
             </div>
-        `).join('');
+        `}).join('');
         
         // Add click handlers for groups
         document.querySelectorAll('.group-card').forEach(card => {
@@ -218,11 +226,58 @@ export const App = {
             });
         }
         
+        // Group photo upload handler
+        const groupPhotoFile = document.getElementById('group-photo-file');
+        let uploadedGroupPhotoUrl = null;
+        const IMGBB_API_KEY = '6e996b4be8ce9bbce89c6441155718ab';
+        
+        if (groupPhotoFile) {
+            groupPhotoFile.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                try {
+                    const reader = new FileReader();
+                    reader.onloadend = async () => {
+                        try {
+                            const base64Data = reader.result.split(',')[1];
+                            const formData = new FormData();
+                            formData.append('image', base64Data);
+                            
+                            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            if (!response.ok) throw new Error(`Upload failed: ${response.statusText}`);
+                            
+                            const result = await response.json();
+                            if (result.success) {
+                                uploadedGroupPhotoUrl = result.data.url;
+                                document.getElementById('group-photo-url').value = '✓ Photo uploaded';
+                                document.getElementById('group-photo-url').disabled = true;
+                            } else {
+                                throw new Error('ImgBB upload failed');
+                            }
+                        } catch (err) {
+                            console.error('Error uploading to ImgBB:', err);
+                            alert('Failed to upload photo: ' + err.message);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                } catch (error) {
+                    console.error('Error reading file:', error);
+                    alert('Failed to read photo file');
+                }
+            };
+        }
+        
         // Confirm create group
         const confirmCreateBtn = document.getElementById('confirm-create-group');
         if (confirmCreateBtn) {
             confirmCreateBtn.addEventListener('click', async () => {
                 const groupName = document.getElementById('group-name-input').value.trim();
+                const groupPhotoUrl = uploadedGroupPhotoUrl || document.getElementById('group-photo-url').value.trim() || '👥';
                 
                 if (!groupName) {
                     alert('Please enter a group name');
@@ -230,11 +285,15 @@ export const App = {
                 }
                 
                 try {
-                    const groupId = await Groups.createGroup(groupName, this.currentUser.uid);
+                    const groupId = await Groups.createGroup(groupName, this.currentUser.uid, groupPhotoUrl);
                     
                     // Close modal
                     document.getElementById('create-group-modal').classList.add('hidden');
                     document.getElementById('group-name-input').value = '';
+                    document.getElementById('group-photo-url').value = '';
+                    document.getElementById('group-photo-url').disabled = false;
+                    uploadedGroupPhotoUrl = null;
+                    groupPhotoFile.value = '';
                     
                     // Reload groups
                     this.userGroups = await Groups.getUserGroups(this.currentUser.uid);
