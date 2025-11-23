@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2KSKS4F7D1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-2KSKS4F7D1');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perets Kidush Dishes - Who's Doing Dishes Tonight?</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Perets Kidush Dishes">
+    <meta property="og:description" content="Fair dish duty rotation system for Friday night Kidush. Let the app decide who does the dishes!">
+    <meta property="og:image" content="https://dishess.com/Images/Perets.jpg">
+    <meta property="og:url" content="https://dishess.com">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Perets Kidush Dishes">
+    <meta name="twitter:description" content="Fair dish duty rotation system for Friday night Kidush. Let the app decide who does the dishes!">
+    <meta name="twitter:image" content="https://dishess.com/Images/Perets.jpg">
+    
+    <!-- WhatsApp -->
+    <meta property="og:site_name" content="Perets Kidush Dishes">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Production/Admin Access Modal -->
+    <div id="admin-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>🔑 Admin Access</h2>
+            <p>Enter admin password:</p>
+            <input type="password" id="admin-password-input" placeholder="Enter admin password" />
+            <div class="modal-buttons">
+                <button id="admin-submit-btn" class="confirm-btn">Access Admin</button>
+                <button id="cancel-admin-access" class="secondary-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Question Modal -->
+    <div id="security-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>🔐 Security Question</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">Who is the oldest granddaughter?</p>
+            <div class="security-options">
+                <button class="security-option-btn" data-answer="tair">Tair</button>
+                <button class="security-option-btn" data-answer="eitan">Eitan</button>
+                <button class="security-option-btn" data-answer="omer">Omer</button>
+                <button class="security-option-btn" data-answer="hadar">Hadar</button>
+            </div>
+            <button id="cancel-security" class="secondary-btn" style="margin-top: 2rem;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="custom-alert-modal" class="modal hidden">
+        <div class="modal-content alert-modal-content">
+            <div id="alert-icon" class="alert-icon"></div>
+            <img id="alert-image" class="alert-image hidden" src="" alt="">
+            <h2 id="alert-title"></h2>
+            <p id="alert-message"></p>
+            <button id="alert-ok-btn" class="confirm-btn">OK</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1 id="page-title" style="cursor: pointer;">🍽️ Perets Kidush Dishes</h1>
+            <p class="subtitle">Who's joining tonight?</p>
+        </header>
+
+        <main id="selection-screen">
+            <div class="brothers-grid">
+                <div class="brother-card" data-brother="Yonatan">
+                    <div class="card-inner">
+                        <div class="avatar"><img src="Images/Yonatan.png" alt="Yonatan"></div>
+                        <h2>Yonatan</h2>
+                        <div class="checkmark">✓</div>
+                    </div>
+                </div>
+
+                <div class="brother-card" data-brother="Ohad">
+                    <div class="card-inner">
+                        <div class="avatar"><img src="Images/Ohad.png" alt="Ohad"></div>
+                        <h2>Ohad</h2>
+                        <div class="checkmark">✓</div>
+                    </div>
+                </div>
+
+                <div class="brother-card" data-brother="Raz">
+                    <div class="card-inner">
+                        <div class="avatar"><img src="Images/Raz.png" alt="Raz"></div>
+                        <h2>Raz</h2>
+                        <div class="checkmark">✓</div>
+                    </div>
+                </div>
+
+                <div class="brother-card" data-brother="Yuval">
+                    <div class="card-inner">
+                        <div class="avatar"><img src="Images/Yuval.png" alt="Yuval"></div>
+                        <h2>Yuval</h2>
+                        <div class="checkmark">✓</div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="submit-btn" class="submit-btn" disabled>
+                <span>Who Does the Dishes?</span>
+                <span class="btn-shine"></span>
+            </button>
+        </main>
+
+        <section id="result-screen" class="hidden">
+            <div class="result-card">
+                <h2>Tonight's Dish Duty Goes To...</h2>
+                <div class="winner-reveal">
+                    <div class="winner-avatar"></div>
+                    <h1 class="winner-name"></h1>
+                    <button id="confirm-btn" class="confirm-btn">✓ Confirm</button>
+                </div>
+                <div class="explanation">
+                    <h3>📊 Why?</h3>
+                    <p class="reason"></p>
+                </div>
+                <div class="stats">
+                    <h3>Current Group Stats</h3>
+                    <div class="stats-list"></div>
+                </div>
+                <div class="action-buttons">
+                    <button id="view-log-btn" class="secondary-btn">📜 View History</button>
+                    <button id="reset-btn" class="secondary-btn">← Back</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="log-screen" class="hidden">
+            <div class="log-card">
+                <h2>📜 Dishes History</h2>
+                <div class="log-filters">
+                    <select id="group-filter">
+                        <option value="all">All Groups</option>
+                    </select>
+                </div>
+                <div id="log-entries" class="log-entries"></div>
+                <button id="close-log-btn" class="secondary-btn">← Back to Results</button>
+            </div>
+        </section>
+
+        <section id="admin-panel" class="hidden">
+            <div class="log-card">
+                <h2>🔑 Admin Panel - Data Management</h2>
+                <p class="admin-notice">⚠️ Admin Mode: Edit and manage all records</p>
+                <div class="log-filters">
+                    <select id="admin-env-filter">
+                        <option value="" disabled selected>Environment:</option>
+                        <option value="production">Production</option>
+                        <option value="test">Test</option>
+                    </select>
+                    <select id="admin-group-filter">
+                        <option value="all">All Groups</option>
+                    </select>
+                </div>
+                <div id="admin-entries" class="log-entries"></div>
+                <button id="close-admin-btn" class="secondary-btn">← Close Admin Panel</button>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-buttons">
+            <div class="env-toggle admin-toggle" id="admin-toggle">
+                <span class="env-label">🔑 Admin</span>
+            </div>
+            <div class="env-toggle test-env-toggle" id="test-env-toggle">
+                <span class="env-label">🧪 Go to Test</span>
+            </div>
+        </div>
+        <div class="footer-right">
+            <a href="https://wa.me/972544756518" target="_blank" class="designer-credit">© Ohad Perets</a>
+            <div class="mode-indicator" id="mode-indicator">
+                <span class="mode-text">Production mode</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQEEhofjHe66sMG3UbpsJ9JbCqoV7iALg",
+            authDomain: "dishdutyrotation.firebaseapp.com",
+            projectId: "dishdutyrotation",
+            storageBucket: "dishdutyrotation.firebasestorage.app",
+            messagingSenderId: "880812554578",
+            appId: "1:880812554578:web:4a8f9d01e69fbb0b46228b",
+            measurementId: "G-2KSKS4F7D1"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make Firestore available globally
+        window.firebaseDB = db;
+        window.firestoreModules = { collection, doc, getDoc, setDoc, updateDoc };
+    </script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
