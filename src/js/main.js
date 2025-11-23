@@ -351,23 +351,40 @@ async function saveDishHistory() {
     }
 }
 
-// Brother card selection
-brotherCards.forEach(card => {
-    card.addEventListener('click', () => {
-        const brother = card.dataset.brother;
-        
-        if (selectedBrothers.has(brother)) {
-            selectedBrothers.delete(brother);
-            card.classList.remove('selected');
-        } else {
-            selectedBrothers.add(brother);
-            card.classList.add('selected');
-        }
-        
-        // Update submit button state
-        updateSubmitButtonState();
+// Initialize brother card selection listeners
+function initCardListeners() {
+    const brotherCards = document.querySelectorAll('.brother-card');
+    
+    brotherCards.forEach(card => {
+        // Remove old listeners by cloning
+        const newCard = card.cloneNode(true);
+        card.parentNode.replaceChild(newCard, card);
     });
-});
+    
+    // Add new listeners
+    document.querySelectorAll('.brother-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const brother = card.dataset.brother;
+            
+            if (selectedBrothers.has(brother)) {
+                selectedBrothers.delete(brother);
+                card.classList.remove('selected');
+            } else {
+                selectedBrothers.add(brother);
+                card.classList.add('selected');
+            }
+            
+            // Update submit button state
+            updateSubmitButtonState();
+        });
+    });
+}
+
+// Brother card selection (initial)
+initCardListeners();
+
+// Make initCardListeners available globally
+window.initCardListeners = initCardListeners;
 
 // Submit button - determine who does dishes
 submitBtn.addEventListener('click', () => {
