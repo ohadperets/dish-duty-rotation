@@ -550,6 +550,7 @@ body::after {
     font-weight: 600;
 }
 
+#admin-username-input,
 #admin-password-input {
     padding: 1rem;
     border: 2px solid #8b5cf6;
@@ -559,11 +560,25 @@ body::after {
     color: #e2e8f0;
     outline: none;
     width: 100%;
+    box-sizing: border-box;
+}
+
+#admin-username-input {
+    margin-bottom: 1rem;
+}
+
+#admin-password-input {
     margin-bottom: 1.5rem;
 }
 
+#admin-username-input:focus,
 #admin-password-input:focus {
     border-color: #a78bfa;
+}
+
+#admin-username-input::placeholder,
+#admin-password-input::placeholder {
+    color: #94a3b8;
 }
 
 .modal-buttons {
