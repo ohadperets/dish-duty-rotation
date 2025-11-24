@@ -35,10 +35,28 @@
     <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body>
-    <!-- Login Screen -->
-    <div id="login-screen" class="screen">
+    <!-- Login Screen - Hidden by default until auth check completes -->
+    <div id="login-screen" class="screen hidden">
         <div class="login-container">
-            <h1 class="login-title">🍽️ Dish Duty</h1>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                <svg width="60" height="60" viewBox="0 0 60 60" style="filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.3));">
+                    <defs>
+                        <linearGradient id="utensil-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Fork -->
+                    <line x1="18" y1="15" x2="18" y2="45" stroke="url(#utensil-grad)" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="13" y1="15" x2="13" y2="30" stroke="url(#utensil-grad)" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="18" y1="15" x2="18" y2="30" stroke="url(#utensil-grad)" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="23" y1="15" x2="23" y2="30" stroke="url(#utensil-grad)" stroke-width="2.5" stroke-linecap="round"/>
+                    <!-- Spoon -->
+                    <line x1="42" y1="20" x2="42" y2="45" stroke="url(#utensil-grad)" stroke-width="3" stroke-linecap="round"/>
+                    <ellipse cx="42" cy="17" rx="5" ry="7" fill="url(#utensil-grad)"/>
+                </svg>
+                <h1 class="login-title">Dish Duty</h1>
+            </div>
             <p class="login-subtitle">Fair rotation system for dish duty</p>
             
             <div class="login-buttons">
@@ -67,7 +85,10 @@
     <div id="dashboard-screen" class="screen hidden">
         <div class="dashboard-container">
             <div class="dashboard-header">
-                <h1>My Groups</h1>
+                <div style="display: flex; align-items: center; gap: 0.8rem;">
+                    <span style="font-size: 2rem;">🍴</span>
+                    <h1>My Groups</h1>
+                </div>
                 <button id="logout-btn" class="icon-btn">🚪</button>
             </div>
             
@@ -95,10 +116,15 @@
             
             <div class="add-dishwasher-section">
                 <input type="text" id="dishwasher-name-input" placeholder="Name" />
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                    <input type="text" id="dishwasher-photo-input" placeholder="Emoji (e.g., 👤)" style="flex: 1;" />
+                <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                    <div class="icon-picker">
+                        <button class="icon-option" data-icon="😎" type="button">😎</button>
+                        <button class="icon-option" data-icon="🤓" type="button">🤓</button>
+                        <button class="icon-option" data-icon="👨" type="button">👨</button>
+                        <button class="icon-option" data-icon="👩" type="button">👩</button>
+                    </div>
                     <span style="color: #94a3b8;">or</span>
-                    <label for="dishwasher-photo-file" class="file-upload-btn">📁 Upload Photo</label>
+                    <label for="dishwasher-photo-file" class="file-upload-btn">📁 Upload</label>
                     <input type="file" id="dishwasher-photo-file" accept="image/*" style="display: none;" />
                 </div>
                 <button id="add-dishwasher-btn" class="primary-btn">➕ Add</button>
@@ -118,9 +144,17 @@
             
             <div style="margin-top: 1rem;">
                 <label style="color: #a78bfa; font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">Group Photo (optional)</label>
-                <input type="file" id="group-photo-file" accept="image/*" style="display: none;" />
-                <button class="file-upload-btn" onclick="document.getElementById('group-photo-file').click()">📷 Upload Photo</button>
-                <input type="text" id="group-photo-url" placeholder="Or paste emoji/URL" style="margin-top: 0.5rem; padding: 0.5rem; width: 100%; border: 2px solid rgba(139, 92, 246, 0.3); border-radius: 8px; background: rgba(15, 23, 42, 0.9); color: #e2e8f0;" />
+                <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                    <div class="icon-picker">
+                        <button class="icon-option" data-icon="👨‍👩‍👧‍👦" type="button">👨‍👩‍👧‍👦</button>
+                        <button class="icon-option" data-icon="👥" type="button">👥</button>
+                        <button class="icon-option" data-icon="🏠" type="button">🏠</button>
+                        <button class="icon-option" data-icon="🎉" type="button">🎉</button>
+                    </div>
+                    <span style="color: #94a3b8;">or</span>
+                    <input type="file" id="group-photo-file" accept="image/*" style="display: none;" />
+                    <button class="file-upload-btn" onclick="document.getElementById('group-photo-file').click()">📷 Upload</button>
+                </div>
             </div>
             
             <div class="modal-buttons">
@@ -171,7 +205,14 @@
 
     <div id="dish-app-container" class="container hidden">
         <header>
-            <h1 id="page-title" style="cursor: pointer;">🍽️ Perets Kidush Dishes</h1>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 1rem;">
+                <button id="back-to-groups-btn" class="icon-btn" style="display: none;">←</button>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; flex: 1;">
+                    <div id="group-header-photo" style="width: 50px; height: 50px; border-radius: 50%; overflow: hidden; display: none; background: rgba(139, 92, 246, 0.2); align-items: center; justify-content: center; font-size: 1.5rem; border: 2px solid rgba(139, 92, 246, 0.5);"></div>
+                    <h1 id="page-title" style="cursor: pointer;">✨🍽️ Perets Kidush Dishes</h1>
+                </div>
+                <button id="manage-dishwashers-btn" class="icon-btn" style="display: none;" title="Manage dishwashers">⚙️</button>
+            </div>
         </header>
 
         <main id="selection-screen">

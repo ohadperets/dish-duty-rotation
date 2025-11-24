@@ -2,6 +2,9 @@
 import { Auth } from './auth.js';
 import { Groups } from './groups.js';
 
+// Make Groups available globally for main.js
+window.Groups = Groups;
+
 export const App = {
     currentUser: null,
     currentGroup: null,
@@ -11,17 +14,17 @@ export const App = {
     async init() {
         console.log('Initializing app...');
         
-        // Show login screen initially
-        this.showScreen('login');
+        // Don't show login screen yet - wait for auth check
+        // this.showScreen('login');
         
         // Initialize auth and listen for state changes
         const user = await Auth.init();
         
         if (user) {
-            console.log('User logged in:', user.email);
+            console.log('User already logged in:', user.email);
             await this.onUserLoggedIn(user);
         } else {
-            console.log('No user logged in');
+            console.log('No user logged in - showing login screen');
             this.showScreen('login');
         }
         
@@ -96,7 +99,7 @@ export const App = {
         }
         
         groupsList.innerHTML = this.userGroups.map(group => {
-            const photoUrl = group.photoUrl || '👥';
+            const photoUrl = group.photoUrl || '🫂';
             const isUrl = photoUrl.startsWith('http');
             return `
             <div class="group-card" data-group-id="${group.groupId}">
@@ -111,7 +114,7 @@ export const App = {
                         </div>
                     </div>
                 </div>
-                <div class="group-role">${group.role === 'creator' ? '👑 Admin' : '👤 Member'}</div>
+                <div class="group-role">${group.role === 'creator' ? '⭐ Admin' : '🙋 Member'}</div>
             </div>
         `}).join('');
         
@@ -134,6 +137,38 @@ export const App = {
         
         this.currentGroup = group;
         console.log('Selected group:', group);
+        
+        // Update header with group photo and name
+        const headerPhoto = document.getElementById('group-header-photo');
+        const pageTitle = document.getElementById('page-title');
+        const backBtn = document.getElementById('back-to-groups-btn');
+        const manageBtn = document.getElementById('manage-dishwashers-btn');
+        
+        if (headerPhoto && group.photoUrl) {
+            const isUrl = group.photoUrl.startsWith('http');
+            if (isUrl) {
+                headerPhoto.innerHTML = `<img src="${group.photoUrl}" alt="${group.name}" style="width: 100%; height: 100%; object-fit: cover;">`;
+            } else {
+                headerPhoto.innerHTML = group.photoUrl;
+                headerPhoto.style.fontSize = '1.5rem';
+            }
+            headerPhoto.style.display = 'flex';
+        }
+        
+        if (pageTitle) {
+            pageTitle.textContent = `✨ ${group.name}`;
+        }
+        
+        if (backBtn) {
+            backBtn.style.display = 'block';
+        }
+        
+        if (manageBtn) {
+            manageBtn.style.display = 'block';
+            manageBtn.onclick = () => {
+                this.setupGroup(groupId, group.name);
+            };
+        }
         
         // Store selected group in sessionStorage
         sessionStorage.setItem('selectedGroupId', groupId);
@@ -209,6 +244,14 @@ export const App = {
             });
         }
         
+        // Back to groups button
+        const backToGroupsBtn = document.getElementById('back-to-groups-btn');
+        if (backToGroupsBtn) {
+            backToGroupsBtn.addEventListener('click', () => {
+                this.returnToDashboard();
+            });
+        }
+        
         // Create group
         const createBtn = document.getElementById('create-group-btn');
         if (createBtn) {
@@ -223,8 +266,37 @@ export const App = {
             cancelCreateBtn.addEventListener('click', () => {
                 document.getElementById('create-group-modal').classList.add('hidden');
                 document.getElementById('group-name-input').value = '';
+                // Reset icon selection
+                document.querySelectorAll('#create-group-modal .icon-option').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
             });
         }
+        
+        // Icon picker for group photos
+        let selectedGroupIcon = null;
+        const confirmCreateBtn = document.getElementById('confirm-create-group');
+        
+        // Function to update create button state
+        const updateCreateGroupButtonState = () => {
+            if (confirmCreateBtn) {
+                const hasSelection = selectedGroupIcon !== null || uploadedGroupPhotoUrl !== null;
+                confirmCreateBtn.disabled = !hasSelection;
+            }
+        };
+        
+        document.querySelectorAll('#create-group-modal .icon-option').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Remove selected from all
+                document.querySelectorAll('#create-group-modal .icon-option').forEach(b => b.classList.remove('selected'));
+                // Add selected to clicked
+                btn.classList.add('selected');
+                selectedGroupIcon = btn.dataset.icon;
+                uploadedGroupPhotoUrl = null; // Clear uploaded photo if icon selected
+                updateCreateGroupButtonState();
+            });
+        });
         
         // Group photo upload handler
         const groupPhotoFile = document.getElementById('group-photo-file');
@@ -254,8 +326,16 @@ export const App = {
                             const result = await response.json();
                             if (result.success) {
                                 uploadedGroupPhotoUrl = result.data.url;
-                                document.getElementById('group-photo-url').value = '✓ Photo uploaded';
-                                document.getElementById('group-photo-url').disabled = true;
+                                selectedGroupIcon = null; // Clear icon selection
+                                // Remove icon selections visually
+                                document.querySelectorAll('#create-group-modal .icon-option').forEach(b => b.classList.remove('selected'));
+                                const photoUrlInput = document.getElementById('group-photo-url');
+                                if (photoUrlInput) {
+                                    photoUrlInput.value = '✓ Photo uploaded';
+                                    photoUrlInput.disabled = true;
+                                }
+                                console.log('✅ Photo uploaded successfully');
+                                updateCreateGroupButtonState();
                             } else {
                                 throw new Error('ImgBB upload failed');
                             }
@@ -272,12 +352,24 @@ export const App = {
             };
         }
         
+        // Initialize button state
+        updateCreateGroupButtonState();
+        
         // Confirm create group
-        const confirmCreateBtn = document.getElementById('confirm-create-group');
         if (confirmCreateBtn) {
             confirmCreateBtn.addEventListener('click', async () => {
                 const groupName = document.getElementById('group-name-input').value.trim();
-                const groupPhotoUrl = uploadedGroupPhotoUrl || document.getElementById('group-photo-url').value.trim() || '👥';
+                
+                // Random icon if none selected and no photo uploaded
+                let groupPhotoUrl;
+                if (uploadedGroupPhotoUrl) {
+                    groupPhotoUrl = uploadedGroupPhotoUrl;
+                } else if (selectedGroupIcon) {
+                    groupPhotoUrl = selectedGroupIcon;
+                } else {
+                    const groupIcons = ['👨‍👩‍👧‍👦', '👥', '🏠', '🎉'];
+                    groupPhotoUrl = groupIcons[Math.floor(Math.random() * groupIcons.length)];
+                }
                 
                 if (!groupName) {
                     alert('Please enter a group name');
@@ -290,10 +382,13 @@ export const App = {
                     // Close modal
                     document.getElementById('create-group-modal').classList.add('hidden');
                     document.getElementById('group-name-input').value = '';
-                    document.getElementById('group-photo-url').value = '';
-                    document.getElementById('group-photo-url').disabled = false;
                     uploadedGroupPhotoUrl = null;
+                    selectedGroupIcon = null;
                     groupPhotoFile.value = '';
+                    // Reset icon selection
+                    document.querySelectorAll('#create-group-modal .icon-option').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
                     
                     // Reload groups
                     this.userGroups = await Groups.getUserGroups(this.currentUser.uid);
@@ -341,13 +436,42 @@ export const App = {
     returnToDashboard() {
         this.currentGroup = null;
         sessionStorage.removeItem('selectedGroupId');
+        
+        // Reset header
+        const headerPhoto = document.getElementById('group-header-photo');
+        const pageTitle = document.getElementById('page-title');
+        const backBtn = document.getElementById('back-to-groups-btn');
+        const manageBtn = document.getElementById('manage-dishwashers-btn');
+        
+        if (headerPhoto) {
+            headerPhoto.style.display = 'none';
+            headerPhoto.innerHTML = '';
+        }
+        
+        if (pageTitle) {
+            pageTitle.textContent = '🧽✨ Dish Duty Rotation';
+        }
+        
+        if (backBtn) {
+            backBtn.style.display = 'none';
+        }
+        
+        if (manageBtn) {
+            manageBtn.style.display = 'none';
+        }
+        
         this.showScreen('dashboard');
     },
     
     // Render selection screen with dishwashers
     renderSelectionScreen(dishwashers) {
+        console.log('🎨 Rendering selection screen with dishwashers:', Object.keys(dishwashers));
+        
         const container = document.querySelector('.brothers-grid');
         if (!container) return;
+        
+        // Clear existing content completely
+        container.innerHTML = '';
         
         container.innerHTML = Object.entries(dishwashers).map(([name, photo]) => {
             const isUrl = photo && (photo.startsWith('http://') || photo.startsWith('https://') || photo.startsWith('/'));
@@ -355,7 +479,7 @@ export const App = {
                 <div class="brother-card" data-brother="${name}">
                     <div class="card-inner">
                         <div class="avatar">
-                            ${isUrl ? `<img src="${photo}" alt="${name}" onerror="this.style.display='none'; this.parentElement.innerHTML='👤';">` : `<div style="font-size: 4rem;">${photo || '👤'}</div>`}
+                            ${isUrl ? `<img src="${photo}" alt="${name}" onerror="this.style.display='none'; this.parentElement.innerHTML='🧑';">` : `<div style="font-size: 4rem;">${photo || '🧑'}</div>`}
                         </div>
                         <h2>${name}</h2>
                         <div class="checkmark">✓</div>
@@ -435,8 +559,32 @@ export const App = {
             };
         }
         
-        // Add dishwasher
+        // Icon picker for dishwasher photos
+        let selectedDishwasherIcon = null;
         const addBtn = document.getElementById('add-dishwasher-btn');
+        
+        // Function to update add button state
+        const updateAddDishwasherButtonState = () => {
+            if (addBtn) {
+                const hasSelection = selectedDishwasherIcon !== null || uploadedPhotoUrl !== null;
+                addBtn.disabled = !hasSelection;
+            }
+        };
+        
+        document.querySelectorAll('#setup-screen .icon-option').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Remove selected from all
+                document.querySelectorAll('#setup-screen .icon-option').forEach(b => b.classList.remove('selected'));
+                // Add selected to clicked
+                btn.classList.add('selected');
+                selectedDishwasherIcon = btn.dataset.icon;
+                uploadedPhotoUrl = null; // Clear uploaded photo if icon selected
+                updateAddDishwasherButtonState();
+            });
+        });
+        
+        // Add dishwasher
         const photoFileInput = document.getElementById('dishwasher-photo-file');
         let uploadedPhotoUrl = null;
         
@@ -472,9 +620,11 @@ export const App = {
                             const result = await response.json();
                             if (result.success) {
                                 uploadedPhotoUrl = result.data.url;
-                                // Update input to show file was uploaded
-                                document.getElementById('dishwasher-photo-input').value = '✓ Photo uploaded';
-                                document.getElementById('dishwasher-photo-input').disabled = true;
+                                selectedDishwasherIcon = null; // Clear icon selection when photo uploaded
+                                // Remove icon selections visually
+                                document.querySelectorAll('#setup-screen .icon-option').forEach(b => b.classList.remove('selected'));
+                                console.log('✅ Dishwasher photo uploaded');
+                                updateAddDishwasherButtonState();
                             } else {
                                 throw new Error('ImgBB upload failed');
                             }
@@ -491,13 +641,25 @@ export const App = {
             };
         }
         
+        // Initialize button state
+        updateAddDishwasherButtonState();
+        
         if (addBtn) {
             addBtn.onclick = async () => {
                 const nameInput = document.getElementById('dishwasher-name-input');
-                const photoInput = document.getElementById('dishwasher-photo-input');
                 
                 const name = nameInput.value.trim();
-                const photo = uploadedPhotoUrl || photoInput.value.trim() || '👤';
+                
+                // Random icon if none selected and no photo uploaded
+                let photo;
+                if (uploadedPhotoUrl) {
+                    photo = uploadedPhotoUrl;
+                } else if (selectedDishwasherIcon) {
+                    photo = selectedDishwasherIcon;
+                } else {
+                    const dishwasherIcons = ['😎', '🤓', '👨', '👩'];
+                    photo = dishwasherIcons[Math.floor(Math.random() * dishwasherIcons.length)];
+                }
                 
                 if (!name) {
                     alert('Please enter a name');
@@ -509,10 +671,13 @@ export const App = {
                     await this.renderDishwashers(groupId);
                     
                     nameInput.value = '';
-                    photoInput.value = '';
-                    photoInput.disabled = false;
                     uploadedPhotoUrl = null;
+                    selectedDishwasherIcon = null;
                     photoFileInput.value = '';
+                    // Reset icon selection
+                    document.querySelectorAll('#setup-screen .icon-option').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
                 } catch (error) {
                     console.error('Error adding dishwasher:', error);
                     alert('Failed to add dishwasher');

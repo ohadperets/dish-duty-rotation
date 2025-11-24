@@ -90,6 +90,7 @@ const DB = {
 
 // Environment management
 let isTestMode = false; // Start in production mode
+localStorage.setItem('testMode', 'false'); // Initialize for Groups module
 const STORAGE_KEYS = {
     production: 'dishHistory',
     test: 'dishHistory_test'
@@ -129,6 +130,29 @@ document.getElementById('alert-ok-btn').addEventListener('click', () => {
     document.getElementById('custom-alert-modal').classList.add('hidden');
 });
 
+// Initialize dish rotation with group-specific data
+window.initDishRotation = function(groupId, dishwashers, groupData) {
+    console.log('🔄 Initializing dish rotation for group:', groupId);
+    console.log('📊 GroupData received:', groupData);
+    
+    // Clear previous selections when switching groups
+    selectedBrothers.clear();
+    document.querySelectorAll('.brother-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Load group's history into dishHistory
+    if (groupData && groupData.history && groupData.history.length > 0) {
+        dishHistory = groupData.history;
+        console.log('✅ Loaded', dishHistory.length, 'history entries for this group');
+    } else {
+        dishHistory = [];
+        console.log('⚠️ No history found, starting fresh');
+    }
+    
+    updateSubmitButtonState();
+};
+
 // Load initial data
 (async function initializeApp() {
     try {
@@ -156,19 +180,19 @@ const modeIndicator = document.getElementById('mode-indicator');
 
 // Update submit button state
 function updateSubmitButtonState() {
-    // Check if it's Friday and in Production mode
-    if (!isTestMode && !isFriday()) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>📅 Only on Friday</span>';
-        return;
-    }
+    // TEMPORARILY DISABLED: Friday restriction for testing
+    // if (!isTestMode && !isFriday()) {
+    //     submitBtn.disabled = true;
+    //     submitBtn.innerHTML = '<span>📅 Only on Friday</span>';
+    //     return;
+    // }
     
-    // Check if already ran today in production mode
-    if (!isTestMode && hasRunToday()) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>✓ Already ran today</span>';
-        return;
-    }
+    // TEMPORARILY DISABLED: Already ran today restriction for testing
+    // if (!isTestMode && hasRunToday()) {
+    //     submitBtn.disabled = true;
+    //     submitBtn.innerHTML = '<span>✓ Already ran today</span>';
+    //     return;
+    // }
     
     // Normal state - check if enough brothers selected
     if (selectedBrothers.size < 2) {
@@ -204,6 +228,9 @@ document.querySelectorAll('.security-option-btn').forEach(btn => {
             
             isTestMode = !isTestMode;
             
+            // Save test mode state to localStorage so Groups module can read it
+            localStorage.setItem('testMode', isTestMode.toString());
+            
             if (isTestMode) {
                 testEnvToggle.classList.add('active');
                 testEnvToggle.querySelector('.env-label').textContent = '✓ Go to Production';
@@ -216,13 +243,28 @@ document.querySelectorAll('.security-option-btn').forEach(btn => {
                 modeIndicator.classList.remove('test-mode');
             }
             
-            // Reload data for current mode
-            loadDishHistory().then(() => {
-                updateSubmitButtonState();
-            }).catch(error => {
-                console.error('Failed to load history:', error);
-                alert('Failed to load data for this environment.');
-            });
+            // If in a group, reload the group's data for the new environment
+            if (window.App && window.App.currentGroup) {
+                const groupId = window.App.currentGroup.groupId;
+                console.log('🔄 Reloading group data for new environment...');
+                
+                window.Groups.getGroupData(groupId).then(groupData => {
+                    // Reload dish history for this environment
+                    dishHistory = groupData.history || [];
+                    console.log('✅ Loaded history for', isTestMode ? 'TEST' : 'PRODUCTION', 'mode:', dishHistory.length, 'entries');
+                    updateSubmitButtonState();
+                }).catch(error => {
+                    console.error('Failed to reload group data:', error);
+                });
+            } else {
+                // Not in a group, reload legacy data
+                loadDishHistory().then(() => {
+                    updateSubmitButtonState();
+                }).catch(error => {
+                    console.error('Failed to load history:', error);
+                    alert('Failed to load data for this environment.');
+                });
+            }
             
             // Reset UI if on result/log screens
             if (!resultScreen.classList.contains('hidden') || !logScreen.classList.contains('hidden')) {
@@ -398,19 +440,26 @@ submitBtn.addEventListener('click', () => {
 function determineWhoDoesTheDishes(presentBrothers) {
     const groupKey = presentBrothers.sort().join(',');
     
-    // Get history for this specific group
-    const groupHistory = dishHistory.filter(entry => entry.group === groupKey);
+    console.log('🎯 Determining dishwasher for subgroup:', presentBrothers);
+    console.log('📚 Total history entries:', dishHistory.length);
+    console.log('🔑 Subgroup key:', groupKey);
     
-    // Count dishes done by each brother in this group
+    // Filter history for THIS specific subgroup combination only
+    const subgroupHistory = dishHistory.filter(entry => entry.group === groupKey);
+    console.log('📋 Subgroup history entries:', subgroupHistory.length);
+    
+    // Count how many times each person did dishes in THIS subgroup
     const counts = {};
     const lastDates = {};
     
+    // Initialize all present brothers with 0 count
     presentBrothers.forEach(brother => {
         counts[brother] = 0;
         lastDates[brother] = null;
     });
     
-    groupHistory.forEach(entry => {
+    // Count dishes done by each person in THIS subgroup only
+    subgroupHistory.forEach(entry => {
         if (counts.hasOwnProperty(entry.brother)) {
             counts[entry.brother]++;
             if (!lastDates[entry.brother] || new Date(entry.date) > new Date(lastDates[entry.brother])) {
@@ -418,6 +467,9 @@ function determineWhoDoesTheDishes(presentBrothers) {
             }
         }
     });
+    
+    console.log('📊 Counts per person in this subgroup:', counts);
+    console.log('📅 Last dates:', lastDates);
     
     // Find minimum count
     const minCount = Math.min(...Object.values(counts));
@@ -461,13 +513,24 @@ function determineWhoDoesTheDishes(presentBrothers) {
 
 // Display result screen
 function displayResult(result) {
+    console.log('🎨 Displaying result:', result);
+    console.log('📋 Present brothers:', result.presentBrothers);
+    
     selectionScreen.classList.add('hidden');
     resultScreen.classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    // Update winner display with image
+    // Update winner display with image - get photo from card
+    const winnerCard = document.querySelector(`.brother-card[data-brother="${result.chosen}"]`);
     const winnerAvatar = document.querySelector('.winner-avatar');
-    winnerAvatar.innerHTML = `<img src="Images/${result.chosen}.png" alt="${result.chosen}">`;
+    
+    if (winnerCard) {
+        const avatarContent = winnerCard.querySelector('.avatar').innerHTML;
+        winnerAvatar.innerHTML = avatarContent;
+    } else {
+        winnerAvatar.innerHTML = `<div style="font-size: 4rem;">🧑</div>`;
+    }
+    
     document.querySelector('.winner-name').textContent = result.chosen;
     document.querySelector('.explanation .reason').textContent = result.reason;
     
@@ -483,9 +546,25 @@ function displayResult(result) {
             ? new Date(result.lastDates[brother]).toLocaleDateString()
             : 'Never';
         
+        // Get photo from card
+        const brotherCard = document.querySelector(`.brother-card[data-brother="${brother}"]`);
+        let photoHtml = '<div style="font-size: 1.5rem;">🧑</div>';
+        if (brotherCard) {
+            const avatarEl = brotherCard.querySelector('.avatar');
+            const img = avatarEl.querySelector('img');
+            if (img) {
+                photoHtml = `<img src="${img.src}" alt="${brother}" class="stat-brother-small-img">`;
+            } else {
+                const emojiDiv = avatarEl.querySelector('div');
+                if (emojiDiv) {
+                    photoHtml = `<span style="font-size: 1.5rem;">${emojiDiv.textContent}</span>`;
+                }
+            }
+        }
+        
         statItem.innerHTML = `
             <div class="stat-name">
-                <img src="Images/${brother}.png" alt="${brother}" class="stat-brother-small-img">
+                ${photoHtml}
                 ${brother}
             </div>
             <div class="stat-info">
@@ -511,18 +590,37 @@ document.getElementById('confirm-btn').addEventListener('click', async () => {
         
         const result = window.currentResult;
         
-        // Add to history
-        dishHistory.push({
+        // Create new entry
+        const newEntry = {
             brother: result.chosen,
             group: result.group,
             date: new Date().toISOString(),
             presentBrothers: result.presentBrothers
-        });
+        };
         
-        // Save to Firestore
+        console.log('💾 Saving new entry:', newEntry);
+        console.log('📊 Current dishHistory length before save:', dishHistory.length);
+        
+        // Add to local history
+        dishHistory.push(newEntry);
+        
+        // Save to group's data
+        if (window.App && window.App.currentGroup) {
+            const groupId = window.App.currentGroup.groupId;
+            
+            // Get dishwashers
+            const dishwashers = await window.Groups.getDishwashers(groupId);
+            
+            // Save with updated history (dishHistory already has the new entry)
+            await window.Groups.saveGroupData(groupId, dishwashers, dishHistory);
+            
+            console.log('✅ Saved to groupData/' + groupId + ', history length:', dishHistory.length);
+        }
+        
+        // Also save to legacy dishData collection for backward compatibility
         await saveDishHistory();
         
-        // Log success (no alert)
+        // Log success
         const mode = isTestMode ? 'Test' : 'Production';
         console.log(`✅ Recorded in ${mode} mode! ${result.chosen} will do the dishes tonight.`);
     } catch (error) {

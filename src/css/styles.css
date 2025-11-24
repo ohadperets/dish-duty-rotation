@@ -65,7 +65,7 @@ body::after {
 .login-title {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -395,6 +395,8 @@ body::after {
     z-index: auto;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     pointer-events: auto !important;
+    white-space: nowrap;
+    min-width: fit-content;
 }
 
 .env-toggle:hover {
@@ -407,6 +409,7 @@ body::after {
     letter-spacing: 0.5px;
     text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     pointer-events: none;
+    white-space: nowrap;
 }
 
 .test-env-toggle {
@@ -477,6 +480,7 @@ body::after {
     gap: 6px;
     align-items: center;
     justify-content: flex-start;
+    flex-wrap: wrap;
 }
 
 .footer-right {
@@ -1521,6 +1525,7 @@ header h1 {
     .footer-buttons {
         justify-content: center;
         order: 2;
+        gap: 4px;
     }
     
     .footer-right {
@@ -1529,14 +1534,14 @@ header h1 {
     }
     
     .env-toggle {
-        padding: 0.4rem 0.6rem;
-        font-size: 0.7rem;
+        padding: 0.35rem 0.5rem;
+        font-size: 0.65rem;
         flex: 0 0 auto;
         white-space: nowrap;
     }
     
     .env-label {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
     }
     
     .designer-credit {
@@ -1639,4 +1644,36 @@ header h1 {
     .alert-image {
         max-width: 100%;
     }
+}
+
+/* Icon Picker */
+.icon-picker {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-option {
+    width: 50px;
+    height: 50px;
+    font-size: 1.8rem;
+    border: 2px solid rgba(139, 92, 246, 0.3);
+    border-radius: 12px;
+    background: rgba(139, 92, 246, 0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-option:hover {
+    border-color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.2);
+    transform: scale(1.1);
+}
+
+.icon-option.selected {
+    border-color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
 }

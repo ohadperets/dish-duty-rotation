@@ -7,7 +7,7 @@ export const Groups = {
     },
 
     // Create a new group
-    async createGroup(groupName, creatorUid, photoUrl = '👥') {
+    async createGroup(groupName, creatorUid, photoUrl = '🫂') {
         const { doc, setDoc, getDoc, serverTimestamp } = window.firestoreModules;
         
         let groupId;
@@ -49,11 +49,23 @@ export const Groups = {
                 joinedAt: serverTimestamp()
             });
             
-            // Initialize empty dish data with empty dishwashers
-            const dishDataRef = doc(window.firebaseDB, 'groupData', groupId);
-            await setDoc(dishDataRef, {
-                dishwashers: {},  // Empty object for dishwashers
-                history: [],
+            // Initialize empty dish data for BOTH environments
+            const dishwashers = {};
+            const history = [];
+            
+            // Save to production environment
+            const prodDataRef = doc(window.firebaseDB, 'groupData_production', groupId);
+            await setDoc(prodDataRef, {
+                dishwashers,
+                history,
+                lastUpdated: serverTimestamp()
+            });
+            
+            // Save to test environment
+            const testDataRef = doc(window.firebaseDB, 'groupData_test', groupId);
+            await setDoc(testDataRef, {
+                dishwashers,
+                history,
                 lastUpdated: serverTimestamp()
             });
             
@@ -129,6 +141,13 @@ export const Groups = {
                 }
             }
             
+            // Sort by creation date (newest first)
+            groups.sort((a, b) => {
+                const dateA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+                const dateB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+                return dateB - dateA;
+            });
+            
             return groups;
         } catch (error) {
             console.error('Error getting user groups:', error);
@@ -158,17 +177,37 @@ export const Groups = {
     async getGroupData(groupId) {
         const { doc, getDoc } = window.firestoreModules;
         
+        // Determine environment (check if test mode is active)
+        const isTestMode = localStorage.getItem('testMode') === 'true';
+        const environment = isTestMode ? 'test' : 'production';
+        
         try {
-            const dataRef = doc(window.firebaseDB, 'groupData', groupId);
+            const dataRef = doc(window.firebaseDB, `groupData_${environment}`, groupId);
             const dataSnap = await getDoc(dataRef);
             
+            console.log(`📥 Loading group data for ${groupId} (${environment}):`, dataSnap.exists() ? 'Found' : 'Not found');
+            
             if (dataSnap.exists()) {
-                return dataSnap.data().history || [];
+                const data = dataSnap.data();
+                console.log('  Dishwashers:', Object.keys(data.dishwashers || {}).length);
+                console.log('  History:', data.history?.length || 0);
+                return {
+                    dishwashers: data.dishwashers || {},
+                    history: data.history || []
+                };
             }
-            return [];
+            
+            console.log('  Returning empty data');
+            return {
+                dishwashers: {},
+                history: []
+            };
         } catch (error) {
             console.error('Error getting group data:', error);
-            return [];
+            return {
+                dishwashers: {},
+                history: []
+            };
         }
     },
 
@@ -176,13 +215,22 @@ export const Groups = {
     async saveGroupData(groupId, dishwashers, history) {
         const { doc, setDoc, serverTimestamp } = window.firestoreModules;
         
+        // Determine environment (check if test mode is active)
+        const isTestMode = localStorage.getItem('testMode') === 'true';
+        const environment = isTestMode ? 'test' : 'production';
+        
+        console.log(`📤 Saving group data for ${groupId} (${environment}):`);
+        console.log('  History length:', history?.length || 0);
+        console.log('  Dishwashers:', Object.keys(dishwashers || {}).length);
+        
         try {
-            const dataRef = doc(window.firebaseDB, 'groupData', groupId);
+            const dataRef = doc(window.firebaseDB, `groupData_${environment}`, groupId);
             await setDoc(dataRef, {
                 dishwashers,
                 history,
                 lastUpdated: serverTimestamp()
             });
+            console.log('✅ Save successful');
         } catch (error) {
             console.error('Error saving group data:', error);
             throw error;
@@ -194,20 +242,25 @@ export const Groups = {
         const { doc, getDoc, updateDoc } = window.firestoreModules;
         
         try {
-            const dataRef = doc(window.firebaseDB, 'groupData', groupId);
-            const dataSnap = await getDoc(dataRef);
+            // Update BOTH environments so dishwashers are synced
+            const prodDataRef = doc(window.firebaseDB, 'groupData_production', groupId);
+            const testDataRef = doc(window.firebaseDB, 'groupData_test', groupId);
             
-            if (!dataSnap.exists()) {
+            const prodSnap = await getDoc(prodDataRef);
+            
+            if (!prodSnap.exists()) {
                 throw new Error('Group data not found');
             }
             
-            const data = dataSnap.data();
-            const dishwashers = data.dishwashers || {};
+            const dishwashers = prodSnap.data().dishwashers || {};
             
             // Add new dishwasher
-            dishwashers[name] = photoUrl || '👤';
+            dishwashers[name] = photoUrl || '🧑';
             
-            await updateDoc(dataRef, { dishwashers });
+            // Update both environments
+            await updateDoc(prodDataRef, { dishwashers });
+            await updateDoc(testDataRef, { dishwashers });
+            
             return dishwashers;
         } catch (error) {
             console.error('Error adding dishwasher:', error);
@@ -220,20 +273,25 @@ export const Groups = {
         const { doc, getDoc, updateDoc } = window.firestoreModules;
         
         try {
-            const dataRef = doc(window.firebaseDB, 'groupData', groupId);
-            const dataSnap = await getDoc(dataRef);
+            // Update BOTH environments so dishwashers are synced
+            const prodDataRef = doc(window.firebaseDB, 'groupData_production', groupId);
+            const testDataRef = doc(window.firebaseDB, 'groupData_test', groupId);
             
-            if (!dataSnap.exists()) {
+            const prodSnap = await getDoc(prodDataRef);
+            
+            if (!prodSnap.exists()) {
                 throw new Error('Group data not found');
             }
             
-            const data = dataSnap.data();
-            const dishwashers = data.dishwashers || {};
+            const dishwashers = prodSnap.data().dishwashers || {};
             
             // Remove dishwasher
             delete dishwashers[name];
             
-            await updateDoc(dataRef, { dishwashers });
+            // Update both environments
+            await updateDoc(prodDataRef, { dishwashers });
+            await updateDoc(testDataRef, { dishwashers });
+            
             return dishwashers;
         } catch (error) {
             console.error('Error removing dishwasher:', error);
@@ -245,8 +303,12 @@ export const Groups = {
     async getDishwashers(groupId) {
         const { doc, getDoc } = window.firestoreModules;
         
+        // Get from current environment
+        const isTestMode = localStorage.getItem('testMode') === 'true';
+        const environment = isTestMode ? 'test' : 'production';
+        
         try {
-            const dataRef = doc(window.firebaseDB, 'groupData', groupId);
+            const dataRef = doc(window.firebaseDB, `groupData_${environment}`, groupId);
             const dataSnap = await getDoc(dataRef);
             
             if (dataSnap.exists()) {
