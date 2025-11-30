@@ -150,8 +150,14 @@
                         <button class="icon-option" data-icon="👩" type="button">👩</button>
                     </div>
                     <span style="color: #94a3b8;">or</span>
-                    <label for="dishwasher-photo-file" class="file-upload-btn">📁 Upload</label>
+                    <label for="dishwasher-photo-file" class="file-upload-btn">
+                        <span id="dishwasher-upload-btn-text">📁 Upload Photo</span>
+                    </label>
                     <input type="file" id="dishwasher-photo-file" accept="image/*" style="display: none;" />
+                    <div id="dishwasher-photo-preview" style="display: none; margin-top: 1rem; text-align: center;">
+                        <img id="dishwasher-photo-preview-img" style="max-width: 120px; max-height: 120px; border-radius: 50%; border: 3px solid #8b5cf6;" />
+                        <p style="color: #22c55e; font-size: 0.875rem; margin-top: 0.5rem;">✓ Photo uploaded!</p>
+                    </div>
                 </div>
                 <button id="add-dishwasher-btn" class="primary-btn">➕ Add</button>
             </div>
@@ -179,7 +185,13 @@
                     </div>
                     <span style="color: #94a3b8;">or</span>
                     <input type="file" id="group-photo-file" accept="image/*" style="display: none;" />
-                    <button class="file-upload-btn" onclick="document.getElementById('group-photo-file').click()">📷 Upload</button>
+                    <button class="file-upload-btn" onclick="document.getElementById('group-photo-file').click()">
+                        <span id="upload-btn-text">📷 Upload Photo</span>
+                    </button>
+                    <div id="group-photo-preview" style="display: none; margin-top: 1rem; text-align: center;">
+                        <img id="group-photo-preview-img" style="max-width: 150px; max-height: 150px; border-radius: 12px; border: 2px solid #8b5cf6;" />
+                        <p style="color: #22c55e; font-size: 0.875rem; margin-top: 0.5rem;">✓ Photo uploaded successfully!</p>
+                    </div>
                 </div>
             </div>
             

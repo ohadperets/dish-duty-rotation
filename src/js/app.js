@@ -438,10 +438,23 @@ export const App = {
                 const file = e.target.files[0];
                 if (!file) return;
                 
+                // Show loading state
+                const uploadBtnText = document.getElementById('upload-btn-text');
+                const photoPreview = document.getElementById('group-photo-preview');
+                const photoPreviewImg = document.getElementById('group-photo-preview-img');
+                
+                if (uploadBtnText) uploadBtnText.textContent = '⏳ Uploading...';
+                
                 try {
                     const reader = new FileReader();
                     reader.onloadend = async () => {
                         try {
+                            // Show preview immediately with local file
+                            if (photoPreviewImg && photoPreview) {
+                                photoPreviewImg.src = reader.result;
+                                photoPreview.style.display = 'block';
+                            }
+                            
                             const base64Data = reader.result.split(',')[1];
                             const formData = new FormData();
                             formData.append('image', base64Data);
@@ -459,11 +472,10 @@ export const App = {
                                 selectedGroupIcon = null; // Clear icon selection
                                 // Remove icon selections visually
                                 document.querySelectorAll('#create-group-modal .icon-option').forEach(b => b.classList.remove('selected'));
-                                const photoUrlInput = document.getElementById('group-photo-url');
-                                if (photoUrlInput) {
-                                    photoUrlInput.value = '✓ Photo uploaded';
-                                    photoUrlInput.disabled = true;
-                                }
+                                
+                                // Update button text to show success
+                                if (uploadBtnText) uploadBtnText.textContent = '✓ Change Photo';
+                                
                                 console.log('✅ Photo uploaded successfully');
                                 updateCreateGroupButtonState();
                             } else {
@@ -472,12 +484,15 @@ export const App = {
                         } catch (err) {
                             console.error('Error uploading to ImgBB:', err);
                             alert('Failed to upload photo: ' + err.message);
+                            if (uploadBtnText) uploadBtnText.textContent = '📷 Upload Photo';
+                            if (photoPreview) photoPreview.style.display = 'none';
                         }
                     };
                     reader.readAsDataURL(file);
                 } catch (error) {
                     console.error('Error reading file:', error);
                     alert('Failed to read photo file');
+                    if (uploadBtnText) uploadBtnText.textContent = '📷 Upload Photo';
                 }
             };
         }
@@ -727,11 +742,24 @@ export const App = {
                 const file = e.target.files[0];
                 if (!file) return;
                 
+                // Show loading state
+                const uploadBtnText = document.getElementById('dishwasher-upload-btn-text');
+                const photoPreview = document.getElementById('dishwasher-photo-preview');
+                const photoPreviewImg = document.getElementById('dishwasher-photo-preview-img');
+                
+                if (uploadBtnText) uploadBtnText.textContent = '⏳ Uploading...';
+                
                 try {
                     // Convert file to base64
                     const reader = new FileReader();
                     reader.onloadend = async () => {
                         try {
+                            // Show preview immediately with local file
+                            if (photoPreviewImg && photoPreview) {
+                                photoPreviewImg.src = reader.result;
+                                photoPreview.style.display = 'block';
+                            }
+                            
                             const base64Data = reader.result.split(',')[1]; // Remove data:image/...;base64, prefix
                             
                             // Upload to ImgBB
@@ -753,6 +781,10 @@ export const App = {
                                 selectedDishwasherIcon = null; // Clear icon selection when photo uploaded
                                 // Remove icon selections visually
                                 document.querySelectorAll('#setup-screen .icon-option').forEach(b => b.classList.remove('selected'));
+                                
+                                // Update button text
+                                if (uploadBtnText) uploadBtnText.textContent = '✓ Change Photo';
+                                
                                 console.log('✅ Dishwasher photo uploaded');
                                 updateAddDishwasherButtonState();
                             } else {
@@ -761,12 +793,15 @@ export const App = {
                         } catch (err) {
                             console.error('Error uploading to ImgBB:', err);
                             alert('Failed to upload photo: ' + err.message);
+                            if (uploadBtnText) uploadBtnText.textContent = '📁 Upload Photo';
+                            if (photoPreview) photoPreview.style.display = 'none';
                         }
                     };
                     reader.readAsDataURL(file);
                 } catch (error) {
                     console.error('Error reading file:', error);
                     alert('Failed to read photo file');
+                    if (uploadBtnText) uploadBtnText.textContent = '📁 Upload Photo';
                 }
             };
         }
