@@ -23,12 +23,27 @@ export const App = {
         // Initialize auth and listen for state changes
         const user = await Auth.init();
         
+        // Hide loading spinner
+        const welcomeLoading = document.getElementById('welcome-loading');
+        if (welcomeLoading) {
+            welcomeLoading.classList.add('hidden');
+        }
+        
         if (user) {
             console.log('User already logged in:', user.email);
+            // Show logout button on welcome screen
+            const welcomeLogoutBtn = document.getElementById('welcome-logout-btn');
+            if (welcomeLogoutBtn) {
+                welcomeLogoutBtn.classList.remove('hidden');
+            }
             await this.onUserLoggedIn(user);
         } else {
-            console.log('No user logged in - showing login screen');
-            this.showScreen('login');
+            console.log('No user logged in - showing login button');
+            // Show login button instead of automatically showing login screen
+            const welcomeActions = document.getElementById('welcome-actions');
+            if (welcomeActions) {
+                welcomeActions.classList.remove('hidden');
+            }
         }
         
         // Setup event listeners
@@ -77,6 +92,12 @@ export const App = {
     // Handle user logged in
     async onUserLoggedIn(user) {
         this.currentUser = user;
+        
+        // Show logout button on welcome screen if it exists
+        const welcomeLogoutBtn = document.getElementById('welcome-logout-btn');
+        if (welcomeLogoutBtn) {
+            welcomeLogoutBtn.classList.remove('hidden');
+        }
         
         // Load user's groups
         this.userGroups = await Groups.getUserGroups(user.uid);
@@ -243,6 +264,28 @@ export const App = {
                 this.currentGroup = null;
                 this.userGroups = [];
                 sessionStorage.removeItem('selectedGroupId');
+                this.showScreen('login');
+            });
+        }
+        
+        // Welcome screen logout
+        const welcomeLogoutBtn = document.getElementById('welcome-logout-btn');
+        if (welcomeLogoutBtn) {
+            welcomeLogoutBtn.addEventListener('click', async () => {
+                await Auth.signOut();
+                this.currentUser = null;
+                this.currentGroup = null;
+                this.userGroups = [];
+                sessionStorage.removeItem('selectedGroupId');
+                welcomeLogoutBtn.classList.add('hidden');
+                this.showScreen('login');
+            });
+        }
+        
+        // Show login screen button
+        const showLoginBtn = document.getElementById('show-login-btn');
+        if (showLoginBtn) {
+            showLoginBtn.addEventListener('click', () => {
                 this.showScreen('login');
             });
         }

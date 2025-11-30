@@ -38,50 +38,29 @@
     <!-- Welcome Screen - Shows first while checking auth -->
     <div id="welcome-screen" class="screen">
         <div class="welcome-container">
+            <button id="welcome-logout-btn" class="welcome-logout-btn hidden">
+                <span>🚪</span> Logout
+            </button>
             <div class="welcome-logo">
-                <svg width="120" height="120" viewBox="0 0 60 60" style="filter: drop-shadow(0 4px 20px rgba(139, 92, 246, 0.4));">
-                    <defs>
-                        <linearGradient id="utensil-grad-welcome" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <!-- Fork -->
-                    <line x1="18" y1="15" x2="18" y2="45" stroke="url(#utensil-grad-welcome)" stroke-width="3" stroke-linecap="round"/>
-                    <line x1="13" y1="15" x2="13" y2="30" stroke="url(#utensil-grad-welcome)" stroke-width="2.5" stroke-linecap="round"/>
-                    <line x1="18" y1="15" x2="18" y2="30" stroke="url(#utensil-grad-welcome)" stroke-width="2.5" stroke-linecap="round"/>
-                    <line x1="23" y1="15" x2="23" y2="30" stroke="url(#utensil-grad-welcome)" stroke-width="2.5" stroke-linecap="round"/>
-                    <!-- Spoon -->
-                    <line x1="42" y1="20" x2="42" y2="45" stroke="url(#utensil-grad-welcome)" stroke-width="3" stroke-linecap="round"/>
-                    <ellipse cx="42" cy="17" rx="5" ry="7" fill="url(#utensil-grad-welcome)"/>
-                </svg>
+                <img src="Images/dishes-welcome2.png" alt="Dishes Logo" class="welcome-logo-img" 
+                     onerror="this.src='Images/Perets.jpg'">
             </div>
             <h1 class="welcome-title">Dish Duty Rotation</h1>
             <p class="welcome-subtitle">Fair & Fun Way to Share the Dishes</p>
-            <div class="welcome-spinner"></div>
+            <div id="welcome-loading" class="welcome-spinner"></div>
+            <div id="welcome-actions" class="welcome-actions hidden">
+                <button id="show-login-btn" class="welcome-action-btn primary">
+                    <span>🔐</span> Login / Sign Up
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Login Screen - Hidden by default until auth check completes -->
     <div id="login-screen" class="screen hidden">
         <div class="login-container">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
-                <svg width="60" height="60" viewBox="0 0 60 60" style="filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.3));">
-                    <defs>
-                        <linearGradient id="utensil-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <!-- Fork -->
-                    <line x1="18" y1="15" x2="18" y2="45" stroke="url(#utensil-grad)" stroke-width="3" stroke-linecap="round"/>
-                    <line x1="13" y1="15" x2="13" y2="30" stroke="url(#utensil-grad)" stroke-width="2.5" stroke-linecap="round"/>
-                    <line x1="18" y1="15" x2="18" y2="30" stroke="url(#utensil-grad)" stroke-width="2.5" stroke-linecap="round"/>
-                    <line x1="23" y1="15" x2="23" y2="30" stroke="url(#utensil-grad)" stroke-width="2.5" stroke-linecap="round"/>
-                    <!-- Spoon -->
-                    <line x1="42" y1="20" x2="42" y2="45" stroke="url(#utensil-grad)" stroke-width="3" stroke-linecap="round"/>
-                    <ellipse cx="42" cy="17" rx="5" ry="7" fill="url(#utensil-grad)"/>
-                </svg>
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <img src="Images/dishes-welcome2.png" alt="Dishes Logo" style="width: 70px; height: 70px; object-fit: contain;" onerror="this.style.display='none'">
                 <h1 class="login-title">Dish Duty</h1>
             </div>
             <p class="login-subtitle">Fair rotation system for dish duty</p>
