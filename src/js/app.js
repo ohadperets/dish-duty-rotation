@@ -524,16 +524,26 @@ export const App = {
                 try {
                     const groupId = await Groups.createGroup(groupName, this.currentUser.uid, groupPhotoUrl);
                     
-                    // Close modal
+                    // Close modal and clear all inputs
                     document.getElementById('create-group-modal').classList.add('hidden');
                     document.getElementById('group-name-input').value = '';
                     uploadedGroupPhotoUrl = null;
                     selectedGroupIcon = null;
                     groupPhotoFile.value = '';
+                    
                     // Reset icon selection
                     document.querySelectorAll('#create-group-modal .icon-option').forEach(btn => {
                         btn.classList.remove('selected');
                     });
+                    
+                    // Clear photo preview
+                    const photoPreview = document.getElementById('group-photo-preview');
+                    const uploadBtnText = document.getElementById('upload-btn-text');
+                    if (photoPreview) photoPreview.style.display = 'none';
+                    if (uploadBtnText) uploadBtnText.textContent = '📷 Upload Photo';
+                    
+                    // Reset button state
+                    updateCreateGroupButtonState();
                     
                     // Reload groups
                     this.userGroups = await Groups.getUserGroups(this.currentUser.uid);
@@ -835,14 +845,25 @@ export const App = {
                     await Groups.addDishwasher(groupId, name, photo);
                     await this.renderDishwashers(groupId);
                     
+                    // Clear all inputs and previews
                     nameInput.value = '';
                     uploadedPhotoUrl = null;
                     selectedDishwasherIcon = null;
                     photoFileInput.value = '';
+                    
                     // Reset icon selection
                     document.querySelectorAll('#setup-screen .icon-option').forEach(btn => {
                         btn.classList.remove('selected');
                     });
+                    
+                    // Clear photo preview
+                    const photoPreview = document.getElementById('dishwasher-photo-preview');
+                    const uploadBtnText = document.getElementById('dishwasher-upload-btn-text');
+                    if (photoPreview) photoPreview.style.display = 'none';
+                    if (uploadBtnText) uploadBtnText.textContent = '📁 Upload Photo';
+                    
+                    // Reset button state
+                    updateAddDishwasherButtonState();
                 } catch (error) {
                     console.error('Error adding dishwasher:', error);
                     alert('Failed to add dishwasher');
