@@ -255,6 +255,65 @@ export const App = {
             });
         }
         
+        // Email login toggle
+        const emailToggleBtn = document.getElementById('email-login-toggle-btn');
+        const emailForm = document.getElementById('email-login-form');
+        if (emailToggleBtn && emailForm) {
+            emailToggleBtn.addEventListener('click', () => {
+                emailForm.classList.toggle('hidden');
+            });
+        }
+        
+        // Email sign in
+        const emailSignInBtn = document.getElementById('email-signin-btn');
+        if (emailSignInBtn) {
+            emailSignInBtn.addEventListener('click', async () => {
+                const email = document.getElementById('email-input').value.trim();
+                const password = document.getElementById('password-input').value;
+                
+                if (!email || !password) {
+                    alert('Please enter both email and password');
+                    return;
+                }
+                
+                try {
+                    const user = await Auth.signInWithEmail(email, password);
+                    await this.onUserLoggedIn(user);
+                } catch (error) {
+                    console.error('Email login error:', error);
+                    alert('Login failed: ' + error.message);
+                }
+            });
+        }
+        
+        // Email signup link
+        const emailSignupLink = document.getElementById('email-signup-link');
+        if (emailSignupLink) {
+            emailSignupLink.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email-input').value.trim();
+                const password = document.getElementById('password-input').value;
+                
+                if (!email || !password) {
+                    alert('Please enter both email and password to sign up');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    alert('Password must be at least 6 characters');
+                    return;
+                }
+                
+                try {
+                    const user = await Auth.signUpWithEmail(email, password);
+                    await this.onUserLoggedIn(user);
+                } catch (error) {
+                    console.error('Email signup error:', error);
+                    alert('Signup failed: ' + error.message);
+                }
+            });
+        }
+        
         // Logout
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {

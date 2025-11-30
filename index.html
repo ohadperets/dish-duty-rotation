@@ -78,11 +78,30 @@
                 </button>
                 
                 <button id="facebook-login-btn" class="social-login-btn facebook-btn">
-                    <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                        <path fill="#1877F2" d="M48 24C48 10.745 37.255 0 24 0S0 10.745 0 24c0 11.979 8.776 21.908 20.25 23.708v-16.77h-6.094V24h6.094v-5.288c0-6.014 3.583-9.337 9.065-9.337 2.625 0 5.372.469 5.372.469v5.906h-3.026c-2.981 0-3.911 1.85-3.911 3.75V24h6.656l-1.064 6.938H27.75v16.77C39.224 45.908 48 35.978 48 24z"/>
+                    <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path fill="#FFFFFF" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                     </svg>
                     Continue with Facebook
                 </button>
+                
+                <div class="login-divider">
+                    <span>or</span>
+                </div>
+                
+                <button id="email-login-toggle-btn" class="social-login-btn email-btn">
+                    <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    Sign in with Email
+                </button>
+                
+                <div id="email-login-form" class="email-login-form hidden">
+                    <input type="email" id="email-input" placeholder="Email" />
+                    <input type="password" id="password-input" placeholder="Password" />
+                    <button id="email-signin-btn" class="primary-btn">Sign In</button>
+                    <p class="login-help">Don't have an account? <a href="#" id="email-signup-link">Sign up</a></p>
+                </div>
             </div>
         </div>
     </div>
@@ -341,7 +360,7 @@
         // Import Firebase modules
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, query, where, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
         
         // Firebase configuration
@@ -366,7 +385,7 @@
         window.firebaseAuth = auth;
         window.firebaseStorage = storage;
         window.firestoreModules = { collection, doc, getDoc, setDoc, updateDoc, query, where, getDocs, serverTimestamp };
-        window.authModules = { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, signOut, onAuthStateChanged };
+        window.authModules = { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged };
         window.storageModules = { ref, uploadBytes, getDownloadURL };
     </script>
     

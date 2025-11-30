@@ -61,6 +61,38 @@ export const Auth = {
         }
     },
 
+    // Sign in with Email/Password
+    async signInWithEmail(email, password) {
+        await this.waitForFirebase();
+        const { signInWithEmailAndPassword } = window.authModules;
+        
+        try {
+            const result = await signInWithEmailAndPassword(window.firebaseAuth, email, password);
+            this.currentUser = result.user;
+            await this.saveUserToDb(result.user);
+            return result.user;
+        } catch (error) {
+            console.error('Email sign-in error:', error);
+            throw error;
+        }
+    },
+
+    // Sign up with Email/Password
+    async signUpWithEmail(email, password) {
+        await this.waitForFirebase();
+        const { createUserWithEmailAndPassword } = window.authModules;
+        
+        try {
+            const result = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+            this.currentUser = result.user;
+            await this.saveUserToDb(result.user);
+            return result.user;
+        } catch (error) {
+            console.error('Email signup error:', error);
+            throw error;
+        }
+    },
+
     // Sign out
     async signOut() {
         await this.waitForFirebase();
