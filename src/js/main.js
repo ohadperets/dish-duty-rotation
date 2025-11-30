@@ -322,34 +322,47 @@ document.getElementById('admin-submit-btn').addEventListener('click', async () =
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         
-        // Get admin credentials from Firebase
-        const adminCredsDoc = await db.collection('adminCredentials').doc('credentials').get();
+        console.log('🔐 Login attempt:', { username, passwordHash });
         
-        if (!adminCredsDoc.exists) {
+        // Get admin credentials from Firebase using v10 modular syntax
+        const { doc, getDoc } = window.firestoreModules;
+        const adminCredsRef = doc(window.firebaseDB, 'adminCredentials', 'credentials');
+        const adminCredsDoc = await getDoc(adminCredsRef);
+        
+        if (!adminCredsDoc.exists()) {
             alert('❌ Admin credentials not configured!');
+            console.error('Admin credentials document not found');
             return;
         }
         
         const creds = adminCredsDoc.data();
+        console.log('📄 Firebase creds:', creds);
+        console.log('🔍 Match check:', {
+            usernameMatch: creds.username === username,
+            passwordMatch: creds.passwordHash === passwordHash
+        });
         
         if (creds.username === username && creds.passwordHash === passwordHash) {
+            console.log('✅ Credentials match! Opening admin panel...');
             adminModal.classList.add('hidden');
             
-            // Hide other screens and show admin panel
-            selectionScreen.classList.add('hidden');
-            resultScreen.classList.add('hidden');
-            logScreen.classList.add('hidden');
-            adminPanel.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // TODO: Admin panel needs to be redesigned for multi-group architecture
+            // For now, show success message
+            alert('✅ Admin login successful!\n\nNote: Admin panel is being redesigned for the new multi-group system. Currently, you can manage groups through the Firebase Console.');
             
-            await displayAdminPanel();
+            document.getElementById('admin-username-input').value = '';
+            document.getElementById('admin-password-input').value = '';
+            
+            // Optionally redirect to dashboard or stay on current screen
+            // For now, just close the modal - user stays on their current screen
         } else {
             alert('❌ Incorrect username or password!');
             document.getElementById('admin-username-input').value = '';
             document.getElementById('admin-password-input').value = '';
         }
     } catch (error) {
-        console.error('Admin login error:', error);
+        console.error('❌ Admin login error:', error);
+        console.error('Error stack:', error.stack);
         alert('❌ Login failed. Please try again.');
     }
 });

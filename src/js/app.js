@@ -14,8 +14,11 @@ export const App = {
     async init() {
         console.log('Initializing app...');
         
-        // Don't show login screen yet - wait for auth check
-        // this.showScreen('login');
+        // Show welcome screen first
+        this.showScreen('welcome');
+        
+        // Small delay for welcome screen to be visible
+        await new Promise(resolve => setTimeout(resolve, 800));
         
         // Initialize auth and listen for state changes
         const user = await Auth.init();
@@ -34,8 +37,8 @@ export const App = {
     
     // Show specific screen
     showScreen(screenName) {
-        // Hide/show login, dashboard, and setup screens
-        const authScreens = ['login', 'dashboard', 'setup'];
+        // Hide/show welcome, login, dashboard, and setup screens
+        const authScreens = ['welcome', 'login', 'dashboard', 'setup'];
         authScreens.forEach(screen => {
             const element = document.getElementById(`${screen}-screen`);
             if (element) {
