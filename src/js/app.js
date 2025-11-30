@@ -264,52 +264,77 @@ export const App = {
             });
         }
         
-        // Email sign in
+        // Email signup link
+        const emailSignupLink = document.getElementById('email-signup-link');
+        const confirmPasswordInput = document.getElementById('confirm-password-input');
         const emailSignInBtn = document.getElementById('email-signin-btn');
+        let isSignUpMode = false;
+        
+        if (emailSignupLink) {
+            emailSignupLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                isSignUpMode = !isSignUpMode;
+                
+                if (isSignUpMode) {
+                    // Switch to Sign Up mode
+                    confirmPasswordInput.classList.remove('hidden');
+                    emailSignInBtn.textContent = 'Sign Up';
+                    emailSignupLink.textContent = 'Sign in';
+                    emailSignupLink.parentElement.innerHTML = 'Already have an account? <a href="#" id="email-signup-link">Sign in</a>';
+                    // Re-attach event listener after innerHTML change
+                    document.getElementById('email-signup-link').addEventListener('click', arguments.callee);
+                } else {
+                    // Switch to Sign In mode
+                    confirmPasswordInput.classList.add('hidden');
+                    emailSignInBtn.textContent = 'Sign In';
+                    emailSignupLink.textContent = 'Sign up';
+                    emailSignupLink.parentElement.innerHTML = 'Don\'t have an account? <a href="#" id="email-signup-link">Sign up</a>';
+                    // Re-attach event listener after innerHTML change
+                    document.getElementById('email-signup-link').addEventListener('click', arguments.callee);
+                }
+            });
+        }
+        
+        // Email sign in/up button
         if (emailSignInBtn) {
             emailSignInBtn.addEventListener('click', async () => {
                 const email = document.getElementById('email-input').value.trim();
                 const password = document.getElementById('password-input').value;
+                const confirmPassword = document.getElementById('confirm-password-input').value;
                 
                 if (!email || !password) {
                     alert('Please enter both email and password');
                     return;
                 }
                 
-                try {
-                    const user = await Auth.signInWithEmail(email, password);
-                    await this.onUserLoggedIn(user);
-                } catch (error) {
-                    console.error('Email login error:', error);
-                    alert('Login failed: ' + error.message);
-                }
-            });
-        }
-        
-        // Email signup link
-        const emailSignupLink = document.getElementById('email-signup-link');
-        if (emailSignupLink) {
-            emailSignupLink.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('email-input').value.trim();
-                const password = document.getElementById('password-input').value;
-                
-                if (!email || !password) {
-                    alert('Please enter both email and password to sign up');
-                    return;
-                }
-                
-                if (password.length < 6) {
-                    alert('Password must be at least 6 characters');
-                    return;
-                }
-                
-                try {
-                    const user = await Auth.signUpWithEmail(email, password);
-                    await this.onUserLoggedIn(user);
-                } catch (error) {
-                    console.error('Email signup error:', error);
-                    alert('Signup failed: ' + error.message);
+                if (isSignUpMode) {
+                    // Sign Up mode
+                    if (password !== confirmPassword) {
+                        alert('Passwords do not match!');
+                        return;
+                    }
+                    
+                    if (password.length < 6) {
+                        alert('Password must be at least 6 characters');
+                        return;
+                    }
+                    
+                    try {
+                        const user = await Auth.signUpWithEmail(email, password);
+                        await this.onUserLoggedIn(user);
+                    } catch (error) {
+                        console.error('Email signup error:', error);
+                        alert('Signup failed: ' + error.message);
+                    }
+                } else {
+                    // Sign In mode
+                    try {
+                        const user = await Auth.signInWithEmail(email, password);
+                        await this.onUserLoggedIn(user);
+                    } catch (error) {
+                        console.error('Email login error:', error);
+                        alert('Login failed: ' + error.message);
+                    }
                 }
             });
         }
