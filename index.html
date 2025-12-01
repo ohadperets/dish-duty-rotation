@@ -60,16 +60,19 @@
             </div>
         </div>
         
-        <!-- Video Section - Fixed on left side -->
-        <div id="video-container" class="video-sidebar hidden">
-            <div class="video-wrapper">
-                <iframe id="video-iframe" src="https://video.pictory.ai/embed/20251201144034365786b23f917b04027bf3fd8bb5289f708/20251201152334972Ags6KON3j1Ev4cO"
-                title="Dish Duty Rotation: Fair & Fun Way to Share the Dishes" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowfullscreen>
-                </iframe>
+        <!-- Video Section - Centered modal with backdrop -->
+        <div id="video-container" class="video-modal hidden">
+            <div class="video-backdrop"></div>
+            <div class="video-content">
+                <div class="video-wrapper">
+                    <iframe id="video-iframe" src="https://video.pictory.ai/embed/20251201144034365786b23f917b04027bf3fd8bb5289f708/20251201152334972Ags6KON3j1Ev4cO"
+                    title="Dish Duty Rotation: Fair & Fun Way to Share the Dishes" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+                    </iframe>
+                </div>
+                <button id="close-video-btn" class="close-video-btn">✕</button>
             </div>
-            <button id="close-video-btn" class="close-video-btn">✕</button>
         </div>
     </div>
 

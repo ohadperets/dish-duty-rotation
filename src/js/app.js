@@ -357,20 +357,49 @@ export const App = {
             });
         }
         
-        // Show video button (in footer)
+        // Show video button (in top-left of welcome screen)
         const showVideoBtn = document.getElementById('show-video-btn');
-        const videoContainer = document.getElementById('video-container');
+        const videoModal = document.querySelector('.video-modal');
+        const videoBackdrop = document.querySelector('.video-backdrop');
+        const videoContent = document.querySelector('.video-content');
         const closeVideoBtn = document.getElementById('close-video-btn');
+        const videoIframe = document.querySelector('.video-wrapper iframe');
         
-        if (showVideoBtn && videoContainer) {
+        if (showVideoBtn && videoModal) {
             showVideoBtn.addEventListener('click', () => {
-                videoContainer.classList.remove('hidden');
+                videoModal.classList.remove('hidden');
             });
         }
         
-        if (closeVideoBtn && videoContainer) {
+        if (closeVideoBtn && videoModal) {
             closeVideoBtn.addEventListener('click', () => {
-                videoContainer.classList.add('hidden');
+                videoModal.classList.add('hidden');
+                // Stop video by reloading iframe
+                if (videoIframe) {
+                    const src = videoIframe.src;
+                    videoIframe.src = '';
+                    videoIframe.src = src;
+                }
+            });
+        }
+
+        // Close video when clicking backdrop
+        if (videoBackdrop && videoModal) {
+            videoBackdrop.addEventListener('click', () => {
+                videoModal.classList.add('hidden');
+                // Stop video by reloading iframe
+                if (videoIframe) {
+                    const src = videoIframe.src;
+                    videoIframe.src = '';
+                    videoIframe.src = src;
+                }
+            });
+        }
+
+        // Prevent clicks on video content from closing modal
+        if (videoContent) {
+            videoContent.addEventListener('click', (e) => {
+                e.stopPropagation();
             });
         }
         

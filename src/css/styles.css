@@ -168,26 +168,40 @@ body::after {
     animation: spin 1s linear infinite, fadeInUp 0.8s ease 0.4s backwards;
 }
 
-.video-sidebar {
+.video-modal {
     position: fixed;
-    left: -300px;
     top: 0;
+    left: 0;
+    right: 0;
     bottom: 0;
-    width: 300px;
-    background: rgba(15, 23, 42, 0.98);
-    backdrop-filter: blur(10px);
-    border-right: 2px solid rgba(139, 92, 246, 0.3);
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
     z-index: 10000;
-    transition: left 0.4s ease;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    padding: 1rem;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-.video-sidebar:not(.hidden) {
+.video-modal:not(.hidden) {
+    pointer-events: all;
+    opacity: 1;
+}
+
+.video-backdrop {
+    position: absolute;
+    top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+}
+
+.video-content {
+    position: relative;
+    z-index: 1;
+    animation: scaleIn 0.3s ease;
 }
 
 .video-wrapper {
@@ -195,11 +209,10 @@ body::after {
     width: 100%;
     max-width: 270px;
     height: 480px;
-    margin-top: 3rem;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
-    border: 2px solid rgba(139, 92, 246, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(139, 92, 246, 0.4);
+    border: 3px solid rgba(139, 92, 246, 0.5);
 }
 
 .video-wrapper iframe {
@@ -213,15 +226,15 @@ body::after {
 
 .close-video-btn {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 32px;
-    height: 32px;
+    top: -3rem;
+    right: 0;
+    width: 40px;
+    height: 40px;
     background: rgba(239, 68, 68, 0.2);
     border: 2px solid rgba(239, 68, 68, 0.4);
     border-radius: 50%;
     color: #fca5a5;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -230,9 +243,21 @@ body::after {
 }
 
 .close-video-btn:hover {
-    background: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.4);
     border-color: #ef4444;
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(90deg);
+    color: #fff;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .welcome-actions {
