@@ -36,11 +36,6 @@ export const App = {
         
         if (user) {
             console.log('User already logged in:', user.email);
-            // Show logout button on welcome screen
-            const welcomeLogoutBtn = document.getElementById('welcome-logout-btn');
-            if (welcomeLogoutBtn) {
-                welcomeLogoutBtn.classList.remove('hidden');
-            }
             await this.onUserLoggedIn(user);
         } else {
             console.log('No user logged in - showing login button');
@@ -100,12 +95,6 @@ export const App = {
     // Handle user logged in
     async onUserLoggedIn(user) {
         this.currentUser = user;
-        
-        // Show logout button on welcome screen if it exists
-        const welcomeLogoutBtn = document.getElementById('welcome-logout-btn');
-        if (welcomeLogoutBtn) {
-            welcomeLogoutBtn.classList.remove('hidden');
-        }
         
         // Load user's groups
         this.userGroups = await Groups.getUserGroups(user.uid);
@@ -356,20 +345,6 @@ export const App = {
                 this.currentGroup = null;
                 this.userGroups = [];
                 sessionStorage.removeItem('selectedGroupId');
-                this.showScreen('login');
-            });
-        }
-        
-        // Welcome screen logout
-        const welcomeLogoutBtn = document.getElementById('welcome-logout-btn');
-        if (welcomeLogoutBtn) {
-            welcomeLogoutBtn.addEventListener('click', async () => {
-                await Auth.signOut();
-                this.currentUser = null;
-                this.currentGroup = null;
-                this.userGroups = [];
-                sessionStorage.removeItem('selectedGroupId');
-                welcomeLogoutBtn.classList.add('hidden');
                 this.showScreen('login');
             });
         }
