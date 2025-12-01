@@ -178,14 +178,15 @@ body::after {
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: none;
-    opacity: 0;
+    opacity: 1;
+    pointer-events: all;
     transition: opacity 0.3s ease;
 }
 
-.video-modal:not(.hidden) {
-    pointer-events: all;
-    opacity: 1;
+.video-modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
 }
 
 .video-backdrop {
@@ -206,13 +207,13 @@ body::after {
 
 .video-wrapper {
     position: relative;
-    width: 100%;
-    max-width: 270px;
+    width: 270px;
     height: 480px;
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(139, 92, 246, 0.4);
     border: 3px solid rgba(139, 92, 246, 0.5);
+    background: #000;
 }
 
 .video-wrapper iframe {
