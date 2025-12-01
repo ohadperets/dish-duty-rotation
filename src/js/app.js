@@ -382,6 +382,19 @@ export const App = {
             });
         }
         
+        // Back to welcome screen button (from login)
+        const backToWelcomeBtn = document.getElementById('back-to-welcome-btn');
+        if (backToWelcomeBtn) {
+            backToWelcomeBtn.addEventListener('click', () => {
+                this.showScreen('welcome');
+                // Show the login button again
+                const welcomeActions = document.getElementById('welcome-actions');
+                const welcomeLoading = document.getElementById('welcome-loading');
+                if (welcomeActions) welcomeActions.classList.remove('hidden');
+                if (welcomeLoading) welcomeLoading.classList.add('hidden');
+            });
+        }
+        
         // Back to groups button
         const backToGroupsBtn = document.getElementById('back-to-groups-btn');
         if (backToGroupsBtn) {

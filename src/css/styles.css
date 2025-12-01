@@ -209,6 +209,36 @@ body::after {
     border: 1px solid rgba(139, 92, 246, 0.3);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     animation: fadeInUp 0.6s ease;
+    position: relative;
+}
+
+.back-to-home-btn {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.8rem;
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 12px;
+    color: #a78bfa;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-to-home-btn:hover {
+    background: rgba(139, 92, 246, 0.3);
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateX(-2px);
+}
+
+.back-to-home-btn svg {
+    width: 16px;
+    height: 16px;
 }
 
 .login-title {
