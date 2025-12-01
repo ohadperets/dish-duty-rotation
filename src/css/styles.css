@@ -133,6 +133,75 @@ body::after {
     animation: spin 1s linear infinite, fadeInUp 0.8s ease 0.4s backwards;
 }
 
+.welcome-video-section {
+    margin: 1.5rem 0;
+    animation: fadeInUp 0.8s ease 0.3s backwards;
+}
+
+.toggle-video-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+    border: 2px solid rgba(139, 92, 246, 0.4);
+    border-radius: 12px;
+    color: #a78bfa;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0 auto;
+}
+
+.toggle-video-btn:hover {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3));
+    border-color: rgba(139, 92, 246, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.toggle-video-btn svg {
+    transition: transform 0.3s ease;
+}
+
+.toggle-video-btn:hover svg {
+    transform: scale(1.1);
+}
+
+.video-container {
+    margin-top: 1rem;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.5s ease;
+}
+
+.video-container:not(.hidden) {
+    max-height: 500px;
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 270px;
+    height: 480px;
+    margin: 0 auto;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
+    border: 2px solid rgba(139, 92, 246, 0.3);
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
 .welcome-actions {
     display: flex;
     flex-direction: column;

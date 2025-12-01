@@ -357,6 +357,22 @@ export const App = {
             });
         }
         
+        // Toggle video button
+        const toggleVideoBtn = document.getElementById('toggle-video-btn');
+        const videoContainer = document.getElementById('video-container');
+        if (toggleVideoBtn && videoContainer) {
+            toggleVideoBtn.addEventListener('click', () => {
+                const isHidden = videoContainer.classList.contains('hidden');
+                if (isHidden) {
+                    videoContainer.classList.remove('hidden');
+                    toggleVideoBtn.querySelector('span').textContent = 'Hide Video';
+                } else {
+                    videoContainer.classList.add('hidden');
+                    toggleVideoBtn.querySelector('span').textContent = 'Watch How It Works';
+                }
+            });
+        }
+        
         // Back to welcome screen button (from login)
         const backToWelcomeBtn = document.getElementById('back-to-welcome-btn');
         if (backToWelcomeBtn) {
