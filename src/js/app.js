@@ -357,19 +357,20 @@ export const App = {
             });
         }
         
-        // Toggle video button
-        const toggleVideoBtn = document.getElementById('toggle-video-btn');
+        // Show video button (in footer)
+        const showVideoBtn = document.getElementById('show-video-btn');
         const videoContainer = document.getElementById('video-container');
-        if (toggleVideoBtn && videoContainer) {
-            toggleVideoBtn.addEventListener('click', () => {
-                const isHidden = videoContainer.classList.contains('hidden');
-                if (isHidden) {
-                    videoContainer.classList.remove('hidden');
-                    toggleVideoBtn.querySelector('span').textContent = 'Hide Video';
-                } else {
-                    videoContainer.classList.add('hidden');
-                    toggleVideoBtn.querySelector('span').textContent = 'Watch How It Works';
-                }
+        const closeVideoBtn = document.getElementById('close-video-btn');
+        
+        if (showVideoBtn && videoContainer) {
+            showVideoBtn.addEventListener('click', () => {
+                videoContainer.classList.remove('hidden');
+            });
+        }
+        
+        if (closeVideoBtn && videoContainer) {
+            closeVideoBtn.addEventListener('click', () => {
+                videoContainer.classList.add('hidden');
             });
         }
         

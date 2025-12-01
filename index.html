@@ -37,6 +37,13 @@
 <body>
     <!-- Welcome Screen - Shows first while checking auth -->
     <div id="welcome-screen" class="screen">
+        <button id="show-video-btn" class="show-video-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+            <span>How It Works</span>
+        </button>
+        
         <div class="welcome-container">
             <div class="welcome-logo">
                 <img src="Images/dishes-welcome2.png" alt="Dishes Logo" class="welcome-logo-img" 
@@ -45,31 +52,24 @@
             <h1 class="welcome-title">Dish Duty Rotation</h1>
             <p class="welcome-subtitle">Fair & Fun Way to Share the Dishes</p>
             
-            <!-- Video Section -->
-            <div class="welcome-video-section">
-                <button id="toggle-video-btn" class="toggle-video-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <span>Watch How It Works</span>
-                </button>
-                <div id="video-container" class="video-container hidden">
-                    <div class="video-wrapper">
-                        <iframe src="https://video.pictory.ai/embed/20251201144034365786b23f917b04027bf3fd8bb5289f708/20251201152334972Ags6KON3j1Ev4cO"
-                        title="Dish Duty Rotation: Fair & Fun Way to Share the Dishes" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        allowfullscreen>
-                        </iframe>
-                    </div>
-                </div>
-            </div>
-            
             <div id="welcome-loading" class="welcome-spinner"></div>
             <div id="welcome-actions" class="welcome-actions hidden">
                 <button id="show-login-btn" class="welcome-action-btn primary">
                     <span>🔐</span> Login / Sign Up
                 </button>
             </div>
+        </div>
+        
+        <!-- Video Section - Fixed on left side -->
+        <div id="video-container" class="video-sidebar hidden">
+            <div class="video-wrapper">
+                <iframe id="video-iframe" src="https://video.pictory.ai/embed/20251201144034365786b23f917b04027bf3fd8bb5289f708/20251201152334972Ags6KON3j1Ev4cO"
+                title="Dish Duty Rotation: Fair & Fun Way to Share the Dishes" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen>
+                </iframe>
+            </div>
+            <button id="close-video-btn" class="close-video-btn">✕</button>
         </div>
     </div>
 
