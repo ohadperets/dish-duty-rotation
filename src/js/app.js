@@ -926,7 +926,7 @@ export const App = {
                 // Update UI
                 if (newMode) {
                     testEnvToggle.classList.add('active');
-                    testEnvToggle.querySelector('.env-label').textContent = '✓ Go to Production';
+                    testEnvToggle.querySelector('.env-label').textContent = '✓ Go to Prod';
                     modeIndicator.querySelector('.mode-text').textContent = 'Test mode';
                     modeIndicator.classList.add('test-mode');
                 } else {

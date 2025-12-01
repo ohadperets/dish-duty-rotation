@@ -214,7 +214,7 @@ testEnvToggle.addEventListener('click', () => {
     
     if (isTestMode) {
         testEnvToggle.classList.add('active');
-        testEnvToggle.querySelector('.env-label').textContent = '✓ Go to Production';
+        testEnvToggle.querySelector('.env-label').textContent = '✓ Go to Prod';
         modeIndicator.querySelector('.mode-text').textContent = 'Test mode';
         modeIndicator.classList.add('test-mode');
     } else {
@@ -239,44 +239,30 @@ testEnvToggle.addEventListener('click', () => {
         });
     } else {
         // Not in a group, reload legacy data
-                loadDishHistory().then(() => {
-                    updateSubmitButtonState();
-                }).catch(error => {
-                    console.error('Failed to load history:', error);
-                    alert('Failed to load data for this environment.');
-                });
-            }
-            
-            // Reset UI if on result/log screens
-            if (!resultScreen.classList.contains('hidden') || !logScreen.classList.contains('hidden')) {
-                resetToSelection();
-            }
-        } else {
-            // Wrong answer - block for 20 seconds
-            securityModal.classList.add('hidden');
-            isBlocked = true;
-            blockCountdown = 20;
-            
-            showCustomAlert('❌', 'Wrong Answer!', 'Go do your homework! You are not a real Perets! 📚\n\nBlocked for 20 seconds...', 'Images/Perets.jpg');
-            
-            // Start countdown
-            const countdownInterval = setInterval(() => {
-                blockCountdown--;
-                
-                if (blockCountdown <= 0) {
-                    clearInterval(countdownInterval);
-                    isBlocked = false;
-                    showCustomAlert('✅', 'Unblocked!', 'You can try again now!');
-                }
-            }, 1000);
-        }
-    });
+        loadDishHistory().then(() => {
+            updateSubmitButtonState();
+        }).catch(error => {
+            console.error('Failed to load history:', error);
+            alert('Failed to load data for this environment.');
+        });
+    }
+    
+    // Reset UI if on result/log screens
+    if (!resultScreen.classList.contains('hidden') || !logScreen.classList.contains('hidden')) {
+        resetToSelection();
+    }
 });
 
-// Cancel security question
-document.getElementById('cancel-security').addEventListener('click', () => {
-    document.getElementById('security-modal').classList.add('hidden');
-});
+// Cancel security question (legacy - can be removed)
+const cancelSecurity = document.getElementById('cancel-security');
+if (cancelSecurity) {
+    cancelSecurity.addEventListener('click', () => {
+        const securityModal = document.getElementById('security-modal');
+        if (securityModal) {
+            securityModal.classList.add('hidden');
+        }
+    });
+}
 
 // Admin toggle - opens admin panel
 adminToggle.addEventListener('click', () => {
