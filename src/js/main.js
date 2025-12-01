@@ -204,60 +204,41 @@ function updateSubmitButtonState() {
     }
 }
 
-// Test Environment toggle
+// Test Environment toggle (no security question)
 testEnvToggle.addEventListener('click', () => {
-    // Check if blocked
-    if (isBlocked) {
-        showCustomAlert('🚫', 'Blocked!', `Wait ${blockCountdown} more seconds...`, 'Images/Jack.png');
-        return;
+    // Toggle test mode directly
+    isTestMode = !isTestMode;
+    
+    // Save test mode state to localStorage so Groups module can read it
+    localStorage.setItem('testMode', isTestMode.toString());
+    
+    if (isTestMode) {
+        testEnvToggle.classList.add('active');
+        testEnvToggle.querySelector('.env-label').textContent = '✓ Go to Production';
+        modeIndicator.querySelector('.mode-text').textContent = 'Test mode';
+        modeIndicator.classList.add('test-mode');
+    } else {
+        testEnvToggle.classList.remove('active');
+        testEnvToggle.querySelector('.env-label').textContent = '🧪 Go to Test';
+        modeIndicator.querySelector('.mode-text').textContent = 'Production mode';
+        modeIndicator.classList.remove('test-mode');
     }
     
-    // Show security question modal
-    const securityModal = document.getElementById('security-modal');
-    securityModal.classList.remove('hidden');
-});
-
-// Security question options
-document.querySelectorAll('.security-option-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const answer = btn.dataset.answer;
-        const securityModal = document.getElementById('security-modal');
+    // If in a group, reload the group's data for the new environment
+    if (window.App && window.App.currentGroup) {
+        const groupId = window.App.currentGroup.groupId;
+        console.log('🔄 Reloading group data for new environment...');
         
-        if (answer === 'hadar') {
-            securityModal.classList.add('hidden');
-            
-            isTestMode = !isTestMode;
-            
-            // Save test mode state to localStorage so Groups module can read it
-            localStorage.setItem('testMode', isTestMode.toString());
-            
-            if (isTestMode) {
-                testEnvToggle.classList.add('active');
-                testEnvToggle.querySelector('.env-label').textContent = '✓ Go to Production';
-                modeIndicator.querySelector('.mode-text').textContent = 'Test mode';
-                modeIndicator.classList.add('test-mode');
-            } else {
-                testEnvToggle.classList.remove('active');
-                testEnvToggle.querySelector('.env-label').textContent = '🧪 Go to Test';
-                modeIndicator.querySelector('.mode-text').textContent = 'Production mode';
-                modeIndicator.classList.remove('test-mode');
-            }
-            
-            // If in a group, reload the group's data for the new environment
-            if (window.App && window.App.currentGroup) {
-                const groupId = window.App.currentGroup.groupId;
-                console.log('🔄 Reloading group data for new environment...');
-                
-                window.Groups.getGroupData(groupId).then(groupData => {
-                    // Reload dish history for this environment
-                    dishHistory = groupData.history || [];
-                    console.log('✅ Loaded history for', isTestMode ? 'TEST' : 'PRODUCTION', 'mode:', dishHistory.length, 'entries');
-                    updateSubmitButtonState();
-                }).catch(error => {
-                    console.error('Failed to reload group data:', error);
-                });
-            } else {
-                // Not in a group, reload legacy data
+        window.Groups.getGroupData(groupId).then(groupData => {
+            // Reload dish history for this environment
+            dishHistory = groupData.history || [];
+            console.log('✅ Loaded history for', isTestMode ? 'TEST' : 'PRODUCTION', 'mode:', dishHistory.length, 'entries');
+            updateSubmitButtonState();
+        }).catch(error => {
+            console.error('Failed to reload group data:', error);
+        });
+    } else {
+        // Not in a group, reload legacy data
                 loadDishHistory().then(() => {
                     updateSubmitButtonState();
                 }).catch(error => {
