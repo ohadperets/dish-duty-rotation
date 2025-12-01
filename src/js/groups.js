@@ -177,7 +177,7 @@ export const Groups = {
     async getGroupData(groupId) {
         const { doc, getDoc } = window.firestoreModules;
         
-        // Determine environment (check if test mode is active)
+        // Check current environment from localStorage
         const isTestMode = localStorage.getItem('testMode') === 'true';
         const environment = isTestMode ? 'test' : 'production';
         
@@ -215,7 +215,7 @@ export const Groups = {
     async saveGroupData(groupId, dishwashers, history) {
         const { doc, setDoc, serverTimestamp } = window.firestoreModules;
         
-        // Determine environment (check if test mode is active)
+        // Check current environment from localStorage
         const isTestMode = localStorage.getItem('testMode') === 'true';
         const environment = isTestMode ? 'test' : 'production';
         
@@ -303,7 +303,7 @@ export const Groups = {
     async getDishwashers(groupId) {
         const { doc, getDoc } = window.firestoreModules;
         
-        // Get from current environment
+        // Check current environment from localStorage
         const isTestMode = localStorage.getItem('testMode') === 'true';
         const environment = isTestMode ? 'test' : 'production';
         

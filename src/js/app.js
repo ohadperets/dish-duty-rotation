@@ -14,6 +14,11 @@ export const App = {
     async init() {
         console.log('Initializing app...');
         
+        // Initialize test mode from localStorage (default to false/production)
+        if (!localStorage.getItem('testMode')) {
+            localStorage.setItem('testMode', 'false');
+        }
+        
         // Show welcome screen first
         this.showScreen('welcome');
         
@@ -48,6 +53,9 @@ export const App = {
         
         // Setup event listeners
         this.setupEventListeners();
+        
+        // Update mode indicator UI on load
+        this.updateModeIndicatorUI();
     },
     
     // Show specific screen
@@ -889,6 +897,59 @@ export const App = {
                 this.renderDashboard();
                 this.showScreen('dashboard');
             };
+        }
+        
+        // Test/Production mode toggle (no security question)
+        const testEnvToggle = document.getElementById('test-env-toggle');
+        const modeIndicator = document.getElementById('mode-indicator');
+        
+        if (testEnvToggle && modeIndicator) {
+            testEnvToggle.addEventListener('click', () => {
+                // Toggle test mode in localStorage
+                const currentMode = localStorage.getItem('testMode') === 'true';
+                const newMode = !currentMode;
+                localStorage.setItem('testMode', newMode.toString());
+                
+                // Update UI
+                if (newMode) {
+                    testEnvToggle.classList.add('active');
+                    testEnvToggle.querySelector('.env-label').textContent = '✓ Go to Production';
+                    modeIndicator.querySelector('.mode-text').textContent = 'Test mode';
+                    modeIndicator.classList.add('test-mode');
+                } else {
+                    testEnvToggle.classList.remove('active');
+                    testEnvToggle.querySelector('.env-label').textContent = '🧪 Go to Test';
+                    modeIndicator.querySelector('.mode-text').textContent = 'Production mode';
+                    modeIndicator.classList.remove('test-mode');
+                }
+                
+                // Reload current group data if viewing a group
+                if (this.currentGroup) {
+                    this.selectGroup(this.currentGroup.id);
+                }
+            });
+        }
+    },
+    
+    // Update mode indicator UI based on localStorage
+    updateModeIndicatorUI() {
+        const testEnvToggle = document.getElementById('test-env-toggle');
+        const modeIndicator = document.getElementById('mode-indicator');
+        
+        if (testEnvToggle && modeIndicator) {
+            const isTestMode = localStorage.getItem('testMode') === 'true';
+            
+            if (isTestMode) {
+                testEnvToggle.classList.add('active');
+                testEnvToggle.querySelector('.env-label').textContent = '✓ Go to Production';
+                modeIndicator.querySelector('.mode-text').textContent = 'Test mode';
+                modeIndicator.classList.add('test-mode');
+            } else {
+                testEnvToggle.classList.remove('active');
+                testEnvToggle.querySelector('.env-label').textContent = '🧪 Go to Test';
+                modeIndicator.querySelector('.mode-text').textContent = 'Production mode';
+                modeIndicator.classList.remove('test-mode');
+            }
         }
     }
 };
